@@ -6,10 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.1.0] — 2026-05-17
+## [1.0.0] — 2026-05-14
 
-First public release on PyPI. Targets the D9 launch deliverable: customers
-can `pip install ainfera` and exercise the five core flows in ≤5 lines each.
+First stable release on PyPI. Published as 1.0.0 because the earlier 0.x
+filenames are no longer available for upload on PyPI. Targets the D9 launch
+deliverable: customers can `pip install ainfera` and exercise the five core
+flows in ≤5 lines each.
 
 ### Added
 
@@ -57,5 +59,5 @@ can `pip install ainfera` and exercise the five core flows in ≤5 lines each.
 
 - TypeScript SDK (AIN-44)
 
-[Unreleased]: https://github.com/ainfera-ai/sdk/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/ainfera-ai/sdk/releases/tag/v0.1.0
+[Unreleased]: https://github.com/ainfera-ai/sdk/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/ainfera-ai/sdk/releases/tag/v1.0.0

@@ -1,6 +1,6 @@
 [project]
 name = "ainfera"
-version = "0.1.0"
+version = "1.0.0"
 description = "Prime inference for AI agents. Signed AgentCards, x402-ready wallets, hash-chained audit logs — out of the box."
 readme = "README.md"
 license = { text = "Apache-2.0" }
