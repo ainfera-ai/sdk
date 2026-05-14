@@ -1,0 +1,93 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+  id-token: write  # for PyPI Trusted Publishing (preferred over API tokens)
+
+jobs:
+  build:
+    name: build distributions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+
+      - name: Verify tag matches package version
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          pkg=$(grep -E '^version = "' pyproject.toml | head -1 | sed -E 's/version = "([^"]+)"/\1/')
+          if [ "$tag" != "$pkg" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME ($tag) does not match pyproject.toml version ($pkg)"
+            exit 1
+          fi
+          echo "Tag $tag matches package version $pkg"
+
+      - name: Build distributions
+        run: uvx --from build pyproject-build
+
+      - name: Twine check
+        run: uvx twine check dist/*
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  pypi-publish:
+    name: publish to PyPI
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/ainfera/
+    permissions:
+      id-token: write
+    steps:
+      - name: Download distributions
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      # Preferred path: PyPI Trusted Publishing via OIDC (no token to rotate).
+      # If the project hasn't been configured for trusted publishing yet,
+      # set PYPI_API_TOKEN as a repo secret (sourced from Doppler) and the
+      # fallback step below will use it instead.
+      - name: Publish via OIDC (Trusted Publishing)
+        if: ${{ vars.PYPI_TRUSTED_PUBLISHING == 'true' }}
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+      - name: Publish via API token (Doppler-managed)
+        if: ${{ vars.PYPI_TRUSTED_PUBLISHING != 'true' }}
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
+
+  github-release:
+    name: create GitHub release
+    needs: pypi-publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download distributions
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: dist/*

@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg
+*.egg-info/
+.eggs/
+
+# Build artifacts
+build/
+dist/
+wheels/
+*.whl
+*.tar.gz
+
+# Virtual envs / package managers
+.venv/
+venv/
+env/
+.python-version
+
+# uv
+uv.lock
+
+# Testing / coverage / type checking
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+.tox/
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+
+# Secrets — never commit
+.env
+.env.*
+!.env.example
