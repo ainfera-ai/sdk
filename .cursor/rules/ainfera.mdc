@@ -1,0 +1,32 @@
+---
+description: Ainfera vocabulary + brand + style discipline
+globs:
+  - "**/*"
+alwaysApply: true
+---
+
+# Ainfera Cursor Rules
+
+## Vocabulary (Ontology v1.0)
+Entity classes (PascalCase): Tenant, Agent, AgentCard, Inference, Provider,
+Model, Wallet, Ledger, LedgerEntry, AuditEvent, AuditChain, Settlement,
+Skill, Receipt, TrustScore, Lens, Voter, Council.
+
+API paths (kebab-case): /v1/agents/:id · /v1/audit/:agent_id
+JSON fields (snake_case): agent_id · trust_score · created_at
+
+## Banned terms
+- "Exchange" -> "Infrastructure"
+- "Platform" alone -> specific Layer name
+- "User" (end-customer) -> "Agent" or "Tenant"
+- "Spark/Hermes/Letta/Vox/Mythos" as Ainfera agent -> Manwe/Varda/Namo/Yavanna/Aule
+- "hermes-agent" lowercase IS allowed (NousResearch framework)
+
+## Style
+- TypeScript: strict
+- Python: mypy --strict, ruff, async by default
+- Test before commit
+
+## Commit
+<type>(<scope>): <subject>, blank line, then:
+Co-Authored-By: Claude <noreply@anthropic.com>
