@@ -6,6 +6,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.1] — 2026-05-15
+
+Docstring-only release. No behaviour change.
+
+### Fixed
+
+- Module docstring on `ainfera.__init__` now reads
+  `"Ainfera — the Inference of AI Agents."` (Brand v1.3 canonical).
+  The 1.0.0 release shipped with the pre-lock `"prime inference for AI
+  agents"` string — the source-tree fix in commit 4fd895c never made it
+  into a tagged release.
+
 ## [1.0.0] — 2026-05-14
 
 First stable release on PyPI. Published as 1.0.0 because the earlier 0.x
