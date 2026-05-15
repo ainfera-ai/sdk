@@ -44,3 +44,6 @@ htmlcov/
 .env
 .env.*
 !.env.example
+
+# `ainfera install` writes tenant api keys here
+.ainfera/
