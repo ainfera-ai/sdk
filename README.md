@@ -35,7 +35,7 @@ print(response.receipt.audit_url)
 
 ## What is Ainfera?
 
-Ainfera is prime inference infrastructure for AI agents. Every call your agent makes is signed, settled, and tamper-evidently logged — without you wiring any of that yourself. See [ainfera.ai](https://ainfera.ai).
+**The Inference of AI Agents.** Drain-proof wallet for AI agents. Your agent's wallet survives prompt injection. One Agent Card across 6 providers. Every call cryptographically audited. See [ainfera.ai](https://ainfera.ai).
 
 ## Features
 
