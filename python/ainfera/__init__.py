@@ -1,4 +1,4 @@
-"""Ainfera — prime inference for AI agents.
+"""Ainfera — the Inference of AI Agents.
 
 Signed AgentCards, x402-ready Wallets, hash-chained AuditChains — out of
 the box. See https://ainfera.ai/docs/sdk-python for the full reference.
