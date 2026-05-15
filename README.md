@@ -56,13 +56,14 @@ print(response.receipt.audit_url)
 
 ## Compose, don't invent
 
-This SDK is a thin wrapper around the Ainfera API. The underlying primitives align with:
+This SDK is a thin wrapper around the Ainfera API. The underlying primitives align with — and link to — public standards work:
 
-- Open Agent Identity (OAI) Spec — [openagentidentity.org](https://openagentidentity.org)
-- Mastercard Verifiable Intent
-- x402 Foundation (Linux Foundation)
-- NIST AI Agent Standards Initiative
-- EU AI Act Annex IV
+- **[Open Agent Identity (OAI) Spec](https://openagentidentity.org)** — Autonomy Next, Inc., draft v1.0.5 (Feb 2026)
+- **[Mastercard Verifiable Intent](https://www.mastercard.com/us/en/news-and-trends/stories/2026/verifiable-intent.html)** — open agentic-commerce trust layer (March 2026)
+- **[x402 Foundation](https://x402.foundation/)** — HTTP-native payments protocol, Linux Foundation (April 2026)
+- **[NIST AI Agent Standards Initiative](https://www.nist.gov/caisi/ai-agent-standards-initiative)** — NIST CAISI (Feb 2026)
+- **[EU AI Act Annex IV](https://artificialintelligenceact.eu/annex/4/)** — technical documentation for high-risk AI systems (Regulation 2024/1689)
+- **[JWS, RFC 7515](https://www.rfc-editor.org/rfc/rfc7515)** — used internally for AgentCard signing
 
 ## License
 
