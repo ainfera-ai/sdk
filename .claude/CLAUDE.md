@@ -21,11 +21,11 @@ Spark/Hermes/Letta/Vox/Mythos (as agent codenames), Prime broker (externally).
 - Aule (internal, code, LangGraph)
 - Tulkas (internal, red-team, D14+)
 
-## Brand v1.1
+## Brand v1.3
 - bg #070B14 / #0A0E1A / #0E1322
 - text #E8EDF5 / #8A9AB8
-- accent #5B9BD5 / #3F6EA0
-- Inter Tight 500 (display) / JetBrains Mono (numerics)
+- accent #4D95E8 / #2766BD
+- IBM Plex Sans 500 -0.022em (display) / IBM Plex Mono (numerics)
 
 ## Commit format
 <type>(<scope>): <subject>, blank line, body, blank line, then:
