@@ -47,3 +47,9 @@ htmlcov/
 
 # `ainfera install` writes tenant api keys here
 .ainfera/
+
+# Claude Code config — private by default
+.claude/*
+!.claude/CLAUDE.md
+!.claude/SKILL.md
+!.claude/AGENTS.md
