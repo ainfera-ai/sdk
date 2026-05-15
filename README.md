@@ -35,7 +35,7 @@ print(response.receipt.audit_url)
 
 ## What is Ainfera?
 
-**The Inference of AI Agents.** Drain-proof wallet for AI agents. Your agent's wallet survives prompt injection. One Agent Card across 6 providers. Every call cryptographically audited. See [ainfera.ai](https://ainfera.ai).
+**The Inference of AI Agents.** Drain-proof wallet for AI agents. Your agent's wallet survives prompt injection. One Agent Card across Anthropic, OpenAI, and Together — more Providers in v1.7. Every call cryptographically audited. See [ainfera.ai](https://ainfera.ai).
 
 ## Features
 

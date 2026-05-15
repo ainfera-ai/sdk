@@ -1,7 +1,7 @@
 [project]
 name = "ainfera"
 version = "1.0.0"
-description = "Prime inference for AI agents. Signed AgentCards, x402-ready wallets, hash-chained audit logs — out of the box."
+description = "The Inference of AI Agents. Drain-proof wallets, signed AgentCards (JWS), hash-chained AuditChains — out of the box."
 readme = "README.md"
 license = { text = "Apache-2.0" }
 requires-python = ">=3.10"
