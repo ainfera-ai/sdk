@@ -1,53 +1,34 @@
 # Security Policy
 
-The `ainfera` SDK handles signing keys, JWS-signed AgentCards, wallet
-balances, and tamper-evident audit chains. We take vulnerabilities in
-this surface seriously.
-
 ## Reporting a vulnerability
 
-**Do not open a public GitHub issue for security reports.**
+Please report security vulnerabilities to **security@ainfera.ai** (or **hi@ainfera.ai** if security@ is unavailable).
 
-Email **security@ainfera.ai** with:
+**Do not** open a public GitHub issue for security-sensitive reports.
 
-- A description of the vulnerability and its impact
-- Steps to reproduce (a proof-of-concept is appreciated)
-- The SDK version (`python -c "import ainfera; print(ainfera.__version__)"`)
-  and your Python version
-- Any suggested remediation, if you have one
+When reporting, please include:
 
-You will receive an acknowledgement within **2 business days**. We aim to
-provide an assessment and remediation timeline within **5 business days**.
+- The repository and version (commit SHA if possible)
+- A description of the issue and its impact
+- Steps to reproduce
+- Any suggested mitigation, if known
 
-## Disclosure process
+## Response process
 
-- We follow a **90-day coordinated disclosure** window. We will work with
-  you on a timeline and credit you in the release notes unless you prefer
-  to remain anonymous.
-- Fixes ship in a patch release; the advisory is published once a fixed
-  version is available on PyPI.
-
-## Supported versions
-
-| Version | Supported |
-| ------- | --------- |
-| 0.1.x   | ✅        |
-
-Pre-1.0, only the latest minor receives security patches.
+- Acknowledgement within **3 business days**
+- Initial assessment within **7 business days**
+- Coordinated disclosure: we'll work with you on a timeline before any public discussion
 
 ## Scope
 
-In scope:
+This policy covers code in this repository. For vulnerabilities in the Ainfera platform itself (api.ainfera.ai, app.ainfera.ai), please report the same way — we'll route internally.
 
-- Signature verification bypasses (JWS / AgentCard)
-- Hash-chain verification bypasses (`verify_chain`, `AuditChain.verify`)
-- Credential or token leakage (API keys in logs, errors, or telemetry)
-- TLS or transport-layer weaknesses introduced by the SDK
+## Out of scope
 
-Out of scope:
+- Denial-of-service via brute-force traffic against public endpoints
+- Reports from automated scanners without a demonstrated exploit
+- Issues in dependencies we don't pin (file with the upstream maintainer)
 
-- Vulnerabilities in the Ainfera API itself — report those via the same
-  address; we will route them internally
-- Issues requiring a compromised local environment (e.g. a malicious
-  `AINFERA_API_KEY` already set by an attacker)
-- Denial of service against your own account
+## Recognition
+
+We don't run a paid bounty at this time. We do publicly credit researchers who report responsibly, with their permission.
