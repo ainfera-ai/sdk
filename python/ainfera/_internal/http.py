@@ -48,9 +48,34 @@ def _parse_body(response: httpx.Response) -> dict[str, Any]:
     return body if isinstance(body, dict) else {}
 
 
+def _detail_message(body: dict[str, Any]) -> str | None:
+    # FastAPI HTTPException(detail=...) shape: top-level `detail` may be a
+    # string or a structured dict (e.g. /v1/inference 502 wraps upstream
+    # provider failures as {"code": ..., "upstream_status": ..., "upstream_body": ...}).
+    # Flatten the structured form so str(exception) is debuggable instead of
+    # just "Bad Gateway".
+    detail = body.get("detail")
+    if isinstance(detail, str):
+        return detail
+    if isinstance(detail, dict):
+        code = detail.get("code")
+        upstream_status = detail.get("upstream_status")
+        if code and upstream_status is not None:
+            return f"{code} upstream_status={upstream_status}"
+        if code:
+            return str(code)
+    return None
+
+
 def _map_error(response: httpx.Response) -> APIError:
     body = _parse_body(response)
-    message = body.get("message") or body.get("error") or response.reason_phrase or "API error"
+    message = (
+        body.get("message")
+        or body.get("error")
+        or _detail_message(body)
+        or response.reason_phrase
+        or "API error"
+    )
     status = response.status_code
 
     if status == 402:
