@@ -62,7 +62,7 @@ class AinferaClient:
     """Synchronous Ainfera SDK client.
 
     Args:
-        api_key: Tenant-level API key (``ai_live_*`` or ``ai_test_*``). If omitted,
+        api_key: Tenant-level API key (``ai_infera_*`` or ``ai_test_*``). If omitted,
             the SDK reads the ``AINFERA_API_KEY`` environment variable.
         base_url: Override for self-hosted deployments.
             Defaults to ``https://api.ainfera.ai``.
@@ -115,7 +115,7 @@ class AsyncAinferaClient:
     """Asynchronous Ainfera SDK client. Mirrors :class:`AinferaClient`.
 
     Args:
-        api_key: Tenant-level API key (``ai_live_*`` or ``ai_test_*``). If omitted,
+        api_key: Tenant-level API key (``ai_infera_*`` or ``ai_test_*``). If omitted,
             the SDK reads the ``AINFERA_API_KEY`` environment variable.
         base_url: Override for self-hosted deployments.
             Defaults to ``https://api.ainfera.ai``.
