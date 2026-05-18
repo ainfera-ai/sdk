@@ -3,6 +3,27 @@
 The network call is respx-mocked; the gh CLI lookup is monkey-patched
 via ``_resolve_github_handle`` overrides so the test suite stays
 offline and deterministic.
+
+Legacy-string fixtures (AIN-145 note, 2026-05-18):
+    Several tests below intentionally use legacy/retired strings as
+    test inputs to assert backward-compat parsing + key-format handling:
+
+    - ``framework="nemoclaw+openclaw"`` and ``framework="nemoclaw"``
+      — pre-Phase-2 substrate name. Production has been ``ainfera_core``
+      since 2026-05-17 (Phase-2 rename, ainfera-os v0.3.1; api repo
+      caught up in AIN-140 2026-05-18). These fixtures verify that
+      ``ainfera install`` still parses old manifests that pre-date the
+      rename, so users upgrading from pre-v0.3.1 do not break.
+
+    - ``ak_live_xxx`` / ``ak_live_previously_minted`` — pre-T9 prefix.
+      Current canonical prefix per Charter v3 §primary-source-truths
+      is ``ai_infera_*`` (since 2026-05-16). These fixtures verify
+      that previously-minted keys serialize round-trip cleanly even
+      after the prefix change, so existing customer keys do not break.
+
+    Do not flag these fixtures as audit hits; they are negative-path /
+    legacy-compat coverage by design. The gitleaks scanner may also
+    flag ``ak_live_xxx`` — the value is a placeholder, not a real key.
 """
 
 from __future__ import annotations
