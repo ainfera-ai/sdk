@@ -33,11 +33,17 @@ def _user_agent() -> str:
 
 
 def _headers(api_key: str) -> dict[str, str]:
-    return {
-        "Authorization": f"Bearer {api_key}",
+    # Empty api_key is the documented "unauthenticated bootstrap" mode used
+    # to call public endpoints like POST /v1/agents/signup. Omit the
+    # Authorization header rather than send `Bearer ` with no value, which
+    # some upstream proxies reject as malformed.
+    headers: dict[str, str] = {
         "User-Agent": _user_agent(),
         "Accept": "application/json",
     }
+    if api_key:
+        headers["Authorization"] = f"Bearer {api_key}"
+    return headers
 
 
 def _parse_body(response: httpx.Response) -> dict[str, Any]:

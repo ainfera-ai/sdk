@@ -15,7 +15,7 @@ from ainfera import (
 
 
 def test_402_maps_to_wallet_insufficient(mock_api: respx.MockRouter) -> None:
-    mock_api.post("/v1/agents/ag_x/inference").mock(
+    mock_api.post("/v1/inference").mock(
         return_value=httpx.Response(402, json={"message": "balance below cost"})
     )
     client = AinferaClient(api_key="ak_test")
@@ -25,7 +25,7 @@ def test_402_maps_to_wallet_insufficient(mock_api: respx.MockRouter) -> None:
 
 
 def test_403_maps_to_spend_policy_exceeded(mock_api: respx.MockRouter) -> None:
-    mock_api.post("/v1/agents/ag_x/inference").mock(
+    mock_api.post("/v1/inference").mock(
         return_value=httpx.Response(403, json={"message": "policy blocked"})
     )
     client = AinferaClient(api_key="ak_test")
@@ -37,7 +37,7 @@ def test_403_maps_to_spend_policy_exceeded(mock_api: respx.MockRouter) -> None:
 def test_422_model_unavailable_carries_model_and_provider(
     mock_api: respx.MockRouter,
 ) -> None:
-    mock_api.post("/v1/agents/ag_x/inference").mock(
+    mock_api.post("/v1/inference").mock(
         return_value=httpx.Response(
             422,
             json={
@@ -57,7 +57,7 @@ def test_422_model_unavailable_carries_model_and_provider(
 
 
 def test_500_maps_to_generic_api_error(mock_api: respx.MockRouter) -> None:
-    mock_api.post("/v1/agents/ag_x/inference").mock(
+    mock_api.post("/v1/inference").mock(
         return_value=httpx.Response(500, json={"message": "boom"})
     )
     client = AinferaClient(api_key="ak_test")
@@ -70,7 +70,15 @@ def test_500_maps_to_generic_api_error(mock_api: respx.MockRouter) -> None:
 def test_bearer_header_sent(mock_api: respx.MockRouter) -> None:
     route = mock_api.get("/v1/agents/ag_x").mock(
         return_value=httpx.Response(
-            200, json={"agent_id": "ag_x", "name": "n", "description": None}
+            200,
+            json={
+                "id": "ag_x",
+                "tenant_id": "tn_1",
+                "name": "n",
+                "status": "active",
+                "public_key_ed25519": "PEM",
+                "created_at": "2026-05-14T00:00:00Z",
+            },
         )
     )
     client = AinferaClient(api_key="ak_secret")
