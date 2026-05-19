@@ -6,7 +6,7 @@ the box. See https://ainfera.ai/docs/sdk-python for the full reference.
 
 from ainfera._version import __version__
 from ainfera.agent_card import AgentCard
-from ainfera.agents import Agent, AsyncAgent
+from ainfera.agents import Agent, AsyncAgent, SignupResult
 from ainfera.audit import AsyncAuditChain, AuditChain, AuditEvent, AuditVerifyResult
 from ainfera.client import AinferaClient, AsyncAinferaClient
 from ainfera.exceptions import (
@@ -33,6 +33,7 @@ __all__ = [
     "Agent",
     "AsyncAgent",
     "AgentCard",
+    "SignupResult",
     # Inference
     "InferenceResponse",
     # Wallet / Ledger

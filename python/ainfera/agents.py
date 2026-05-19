@@ -214,13 +214,54 @@ class AsyncAgent(BaseModel):
         return self._client
 
 
+class SignupResult(BaseModel):
+    """Bundle returned by ``POST /v1/agents/signup``.
+
+    The signup endpoint provisions a Tenant + Agent + Wallet atomically and
+    hands back a one-time API key alongside a JWS-signed AgentCard. Use
+    this bundle to bootstrap a fresh client without an existing
+    ``api_key``: the canonical pattern is
+    ``client = AinferaClient.from_signup(result)``.
+
+    ``api_key`` is shown once. Save it from this object before discarding.
+    """
+
+    model_config = ConfigDict(populate_by_name=True)
+
+    agent_id: str = Field(validation_alias=AliasChoices("id", "agent_id"))
+    agent_handle: str
+    tenant_id: str
+    owner_handle: str | None = None
+    canonical_uri: str | None = None
+    did_web: str | None = None
+    api_key: str = Field(
+        description="One-time API key — shown once; persist before discarding."
+    )
+    agent_card_jws: str | None = None
+
+    @property
+    def agent(self) -> Agent:
+        """Return an unbound :class:`Agent` for the freshly-signed-up row.
+
+        The Agent is **not bound to a client** — call
+        ``AinferaClient(api_key=result.api_key).agents.retrieve(result.agent_id)``
+        to operate on it, or use :meth:`AinferaClient.from_signup`.
+        """
+        return Agent(
+            agent_id=self.agent_id,
+            name=self.agent_handle,
+            tenant_id=self.tenant_id,
+        )
+
+
 class AgentsResource:
     """Tenant-scoped collection of Agents. Accessed via ``client.agents``.
 
     SDK 1.1.0 (AIN-79): ``register`` hits ``POST /v1/agents/register`` (was
-    ``POST /v1/agents`` against pre-D4 mocks). The flat ``/v1/agents`` GET
-    is not exposed in production; ``list()`` is dropped until the API
-    surfaces it (tracked AIN-79 follow-up).
+    ``POST /v1/agents`` against pre-D4 mocks). ``signup`` hits the public
+    ``POST /v1/agents/signup`` bundle endpoint (Tenant + Agent + Wallet +
+    one-time API key). The flat ``/v1/agents`` GET is not exposed in
+    production; ``list()`` is dropped until the API surfaces it.
     """
 
     def __init__(self, client: AinferaClient) -> None:
@@ -232,7 +273,7 @@ class AgentsResource:
 
         ``tenant_id`` is required by the API contract; multi-tenant users
         explicitly name the tenant. Single-tenant users typically use
-        :meth:`signup` instead (follow-up — file under AIN-79).
+        :meth:`signup` instead, which provisions the Tenant inline.
         """
         body = self._http.request(
             "POST",
@@ -240,6 +281,48 @@ class AgentsResource:
             json={"tenant_id": tenant_id, "name": name},
         )
         return self._bind(body)
+
+    def signup(
+        self,
+        *,
+        agent_handle: str,
+        owner_handle: str | None = None,
+        owner_source: str | None = None,
+        owner_contact: str | None = None,
+        per_call_cap_usd: str | float | None = None,
+        daily_cap_usd: str | float | None = None,
+        wallet_address: str | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> SignupResult:
+        """Provision a fresh Tenant + Agent + Wallet and return the bundle.
+
+        The endpoint is public (no api_key required for this call). The
+        returned ``SignupResult.api_key`` is shown once — persist it before
+        discarding the result.
+
+        Caps are passed as strings so decimal precision survives the wire.
+        """
+        payload: dict[str, Any] = {"agent_handle": agent_handle}
+        if owner_handle is not None:
+            payload["owner_handle"] = owner_handle
+        if owner_source is not None:
+            payload["owner_source"] = owner_source
+        if owner_contact is not None:
+            payload["owner_contact"] = owner_contact
+        if per_call_cap_usd is not None:
+            payload["per_call_cap_usd"] = str(per_call_cap_usd)
+        if daily_cap_usd is not None:
+            payload["daily_cap_usd"] = str(daily_cap_usd)
+        if wallet_address is not None:
+            payload["wallet_address"] = wallet_address
+        if metadata is not None:
+            payload["metadata"] = metadata
+        body = self._http.request(
+            "POST",
+            endpoints.agent_signup(),
+            json=payload,
+        )
+        return SignupResult.model_validate(body)
 
     def retrieve(self, agent_id: str) -> Agent:
         """Retrieve an Agent by id."""
@@ -267,6 +350,41 @@ class AsyncAgentsResource:
             json={"tenant_id": tenant_id, "name": name},
         )
         return self._bind(body)
+
+    async def signup(
+        self,
+        *,
+        agent_handle: str,
+        owner_handle: str | None = None,
+        owner_source: str | None = None,
+        owner_contact: str | None = None,
+        per_call_cap_usd: str | float | None = None,
+        daily_cap_usd: str | float | None = None,
+        wallet_address: str | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> SignupResult:
+        """Async twin of :meth:`AgentsResource.signup`."""
+        payload: dict[str, Any] = {"agent_handle": agent_handle}
+        if owner_handle is not None:
+            payload["owner_handle"] = owner_handle
+        if owner_source is not None:
+            payload["owner_source"] = owner_source
+        if owner_contact is not None:
+            payload["owner_contact"] = owner_contact
+        if per_call_cap_usd is not None:
+            payload["per_call_cap_usd"] = str(per_call_cap_usd)
+        if daily_cap_usd is not None:
+            payload["daily_cap_usd"] = str(daily_cap_usd)
+        if wallet_address is not None:
+            payload["wallet_address"] = wallet_address
+        if metadata is not None:
+            payload["metadata"] = metadata
+        body = await self._http.request(
+            "POST",
+            endpoints.agent_signup(),
+            json=payload,
+        )
+        return SignupResult.model_validate(body)
 
     async def retrieve(self, agent_id: str) -> AsyncAgent:
         """Retrieve an Agent by id."""

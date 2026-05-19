@@ -25,6 +25,11 @@ API_KEY_ENV_VAR = "AINFERA_API_KEY"
 
 
 def _resolve_api_key(api_key: str | None) -> str:
+    # An explicit empty string is the documented \"unauthenticated bootstrap\"
+    # mode used to call the public POST /v1/agents/signup endpoint. None or
+    # unset still falls back to the env var, then errors loudly if absent.
+    if api_key == "":
+        return ""
     resolved = api_key or os.environ.get(API_KEY_ENV_VAR)
     if not resolved:
         raise AinferaError(

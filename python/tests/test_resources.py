@@ -33,6 +33,22 @@ def _agent_body(*, agent_id: str = _AID, name: str = "n") -> dict[str, object]:
     }
 
 
+def _signup_body(
+    *, agent_id: str = _AID, agent_handle: str = "quickstart-1"
+) -> dict[str, object]:
+    """The canonical /v1/agents/signup bundle response shape."""
+    return {
+        "agent_id": agent_id,
+        "agent_handle": agent_handle,
+        "tenant_id": "tn_1",
+        "owner_handle": "github_user",
+        "canonical_uri": f"ainfera.ai/github_user/{agent_handle}",
+        "did_web": f"did:ainfera:agent:{agent_id}",
+        "api_key": "ai_infera_test_oneshot_FAKE",
+        "agent_card_jws": "eyJhbGciOiJFZERTQSIsImtpZCI6InRlc3QifQ.PAYLOAD.SIG",
+    }
+
+
 def test_agent_register(mock_api: respx.MockRouter) -> None:
     mock_api.post("/v1/agents/register").mock(
         return_value=httpx.Response(201, json=_agent_body(name="my-agent"))
@@ -42,6 +58,48 @@ def test_agent_register(mock_api: respx.MockRouter) -> None:
     assert agent.agent_id == _AID
     assert agent.name == "my-agent"
     assert agent.tenant_id == "tn_1"
+
+
+def test_agent_signup_returns_bundle(mock_api: respx.MockRouter) -> None:
+    """AIN-79: client.agents.signup hits /v1/agents/signup and returns the bundle."""
+    mock_api.post("/v1/agents/signup").mock(
+        return_value=httpx.Response(201, json=_signup_body())
+    )
+    client = AinferaClient(api_key="")
+    result = client.agents.signup(
+        agent_handle="quickstart-1", owner_handle="github_user", owner_source="github_user"
+    )
+    assert result.agent_id == _AID
+    assert result.agent_handle == "quickstart-1"
+    assert result.tenant_id == "tn_1"
+    assert result.api_key == "ai_infera_test_oneshot_FAKE"
+    assert result.did_web == f"did:ainfera:agent:{_AID}"
+
+
+def test_agent_signup_sends_canonical_payload(mock_api: respx.MockRouter) -> None:
+    """Optional fields appear in the request body when supplied; absent otherwise."""
+    route = mock_api.post("/v1/agents/signup").mock(
+        return_value=httpx.Response(201, json=_signup_body())
+    )
+    client = AinferaClient(api_key="")
+    client.agents.signup(
+        agent_handle="quickstart-1",
+        owner_handle="hizrianraz",
+        owner_source="github_user",
+        per_call_cap_usd=0.5,
+        daily_cap_usd="25.00",
+    )
+    sent = route.calls.last.request
+    body = json.loads(sent.content)
+    assert body["agent_handle"] == "quickstart-1"
+    assert body["owner_handle"] == "hizrianraz"
+    assert body["owner_source"] == "github_user"
+    # Caps cross the wire as strings to preserve Decimal precision server-side.
+    assert body["per_call_cap_usd"] == "0.5"
+    assert body["daily_cap_usd"] == "25.00"
+    # Unsupplied optional fields are omitted, not sent as null.
+    assert "wallet_address" not in body
+    assert "metadata" not in body
 
 
 def test_agent_retrieve(mock_api: respx.MockRouter) -> None:
