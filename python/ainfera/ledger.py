@@ -1,12 +1,15 @@
 """Ledger — append-only record of Wallet balance changes.
 
-Maps to Ontology v1.0 §2 Ledger / LedgerEntry. One LedgerEntry per
-balance-changing event (topup, settlement, refund).
+Maps to Ontology v1.0 §2 Ledger / LedgerEntry. SDK 1.1.0 (AIN-79) aligned
+to ``GET /v1/ledger/{agent_id}`` which returns a ``LedgerView`` envelope
+``{agent_id, balance_usd, entries: [...]}``. Pre-1.1.0 paths were against
+``/v1/agents/{id}/wallet/ledger`` which doesn't exist in prod.
 """
 
 from __future__ import annotations
 
 from datetime import datetime
+from decimal import Decimal
 from typing import TYPE_CHECKING
 
 from pydantic import BaseModel, ConfigDict, PrivateAttr
@@ -20,32 +23,44 @@ if TYPE_CHECKING:
 class LedgerEntry(BaseModel):
     """A single append-only Ledger entry."""
 
-    entry_id: str
-    wallet_id: str
-    amount_usd: float
-    balance_after_usd: float
+    id: str
+    agent_id: str
+    amount_usd: Decimal
+    balance_after_usd: Decimal
     kind: str
+    memo: str | None = None
     created_at: datetime
 
 
 class Ledger(BaseModel):
-    """The append-only Ledger for a Wallet (sync flavor)."""
+    """The append-only Ledger for an Agent (sync flavor).
+
+    Backed by ``GET /v1/ledger/{agent_id}`` which returns balance plus
+    the entries list in one envelope. The SDK extracts ``entries`` for
+    the caller; ``balance_usd`` is also accessible via :attr:`balance`.
+    """
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    wallet_id: str
     agent_id: str
 
     _http: HttpClient | None = PrivateAttr(default=None)
+    _last_balance: Decimal | None = PrivateAttr(default=None)
 
     def entries(self, *, limit: int = 100) -> list[LedgerEntry]:
         """Return up to ``limit`` Ledger entries, newest first."""
         body = self._require_http().request(
             "GET",
-            endpoints.agent_wallet_ledger(self.agent_id),
+            endpoints.ledger(self.agent_id),
             params={"limit": limit},
         )
-        return [LedgerEntry.model_validate(entry) for entry in body.get("data", [])]
+        self._last_balance = Decimal(str(body.get("balance_usd", "0")))
+        return [LedgerEntry.model_validate(entry) for entry in body.get("entries", [])]
+
+    @property
+    def balance(self) -> Decimal | None:
+        """Balance from the most recent :meth:`entries` call, ``None`` if never called."""
+        return self._last_balance
 
     def _require_http(self) -> HttpClient:
         if self._http is None:
@@ -54,23 +69,28 @@ class Ledger(BaseModel):
 
 
 class AsyncLedger(BaseModel):
-    """The append-only Ledger for a Wallet (async flavor)."""
+    """The append-only Ledger for an Agent (async flavor)."""
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    wallet_id: str
     agent_id: str
 
     _http: AsyncHttpClient | None = PrivateAttr(default=None)
+    _last_balance: Decimal | None = PrivateAttr(default=None)
 
     async def entries(self, *, limit: int = 100) -> list[LedgerEntry]:
         """Return up to ``limit`` Ledger entries, newest first."""
         body = await self._require_http().request(
             "GET",
-            endpoints.agent_wallet_ledger(self.agent_id),
+            endpoints.ledger(self.agent_id),
             params={"limit": limit},
         )
-        return [LedgerEntry.model_validate(entry) for entry in body.get("data", [])]
+        self._last_balance = Decimal(str(body.get("balance_usd", "0")))
+        return [LedgerEntry.model_validate(entry) for entry in body.get("entries", [])]
+
+    @property
+    def balance(self) -> Decimal | None:
+        return self._last_balance
 
     def _require_http(self) -> AsyncHttpClient:
         if self._http is None:

@@ -1,20 +1,19 @@
 """Agent — the principal entity in Ainfera.
 
-Maps to Ontology v1.0 §2 Agent. Once registered, the Agent object is the
-handle for everything that follows: AgentCard, Wallet, Inference,
-AuditChain. Methods are scoped here (``agent.inference(...)``) rather
-than on the top-level client to keep the per-operation line count low.
+Maps to Ontology v1.0 §2 Agent. SDK 1.1.0 (AIN-79) realigned to the
+production /v1/* surface; pre-D4 mock paths removed.
 
-This module hosts both flavors: :class:`Agent` for use with
-:class:`ainfera.AinferaClient`, and :class:`AsyncAgent` for use with
-:class:`ainfera.AsyncAinferaClient`.
+The Agent model binds against both the retrieve response (``id``,
+``tenant_id``, ``name``, ``status``, ``public_key_ed25519``,
+``created_at``) and the signup-bundle response (``agent_id``, ``name``).
+The ``agent_id`` field aliases ``id`` so both shapes round-trip cleanly.
 """
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from pydantic import BaseModel, ConfigDict, PrivateAttr
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field, PrivateAttr
 
 from ainfera._internal import endpoints
 from ainfera.agent_card import AgentCard
@@ -28,29 +27,36 @@ if TYPE_CHECKING:
 
 
 class Agent(BaseModel):
-    """An Ainfera Agent (sync flavor)."""
+    """An Ainfera Agent (sync flavor).
 
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+    Fields beyond ``agent_id`` + ``name`` are optional so the model
+    round-trips both the slim signup-bundle and the full retrieve
+    response without two separate types.
+    """
 
-    agent_id: str
+    model_config = ConfigDict(arbitrary_types_allowed=True, populate_by_name=True)
+
+    agent_id: str = Field(validation_alias=AliasChoices("id", "agent_id"))
     name: str
     description: str | None = None
+    tenant_id: str | None = None
+    status: str | None = None
+    public_key_ed25519: str | None = None
 
     _client: AinferaClient | None = PrivateAttr(default=None)
     _wallet: Wallet | None = PrivateAttr(default=None)
     _audit_chain: AuditChain | None = PrivateAttr(default=None)
 
     def refresh(self) -> Agent:
-        """Refetch this Agent's data from the API and return ``self``.
-
-        Updates mutable fields in place and drops the cached Wallet and
-        AuditChain handles so the next access re-fetches them.
-        """
+        """Refetch this Agent's data from the API and return ``self``."""
         http = self._require_client()._http
         body = http.request("GET", endpoints.agent(self.agent_id))
         fresh = Agent.model_validate(body)
         self.name = fresh.name
         self.description = fresh.description
+        self.tenant_id = fresh.tenant_id
+        self.status = fresh.status
+        self.public_key_ed25519 = fresh.public_key_ed25519
         self._wallet = None
         self._audit_chain = None
         return self
@@ -68,7 +74,7 @@ class Agent(BaseModel):
         """The Wallet attached to this Agent. Fetched once and cached."""
         if self._wallet is None:
             http = self._require_client()._http
-            body = http.request("GET", endpoints.agent_wallet(self.agent_id))
+            body = http.request("GET", endpoints.wallet(self.agent_id))
             wallet = Wallet.model_validate(body)
             wallet._http = http
             self._wallet = wallet
@@ -76,7 +82,7 @@ class Agent(BaseModel):
 
     @property
     def audit_chain(self) -> AuditChain:
-        """The AuditChain for this Agent. Handle is cached; events are fetched on demand."""
+        """The AuditChain for this Agent. Handle is cached; events fetched on demand."""
         if self._audit_chain is None:
             chain = AuditChain(agent_id=self.agent_id)
             chain._http = self._require_client()._http
@@ -93,19 +99,19 @@ class Agent(BaseModel):
     ) -> InferenceResponse:
         """Make a single Inference call routed through Ainfera.
 
-        Args:
-            model: Model identifier to route to.
-            messages: Chat messages in the standard role/content shape.
-            timeout: Per-call HTTP timeout in seconds. Overrides the
-                client default for this request only — raise it for
-                long-context calls on large models.
-            **extra: Additional request fields passed through verbatim.
+        Hits flat ``POST /v1/inference``; agent_id travels in the body.
+        Set ``model="ainfera-auto"`` to dispatch through L2 Routing.
         """
-        payload: dict[str, Any] = {"model": model, "messages": messages, **extra}
+        payload: dict[str, Any] = {
+            "agent_id": self.agent_id,
+            "model": model,
+            "messages": messages,
+            **extra,
+        }
         http = self._require_client()._http
         body = http.request(
             "POST",
-            endpoints.agent_inference(self.agent_id),
+            endpoints.inference(),
             json=payload,
             timeout=timeout,
         )
@@ -122,27 +128,29 @@ class Agent(BaseModel):
 class AsyncAgent(BaseModel):
     """An Ainfera Agent (async flavor)."""
 
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+    model_config = ConfigDict(arbitrary_types_allowed=True, populate_by_name=True)
 
-    agent_id: str
+    agent_id: str = Field(validation_alias=AliasChoices("id", "agent_id"))
     name: str
     description: str | None = None
+    tenant_id: str | None = None
+    status: str | None = None
+    public_key_ed25519: str | None = None
 
     _client: AsyncAinferaClient | None = PrivateAttr(default=None)
     _wallet: AsyncWallet | None = PrivateAttr(default=None)
     _audit_chain: AsyncAuditChain | None = PrivateAttr(default=None)
 
     async def refresh(self) -> AsyncAgent:
-        """Refetch this Agent's data from the API and return ``self``.
-
-        Updates mutable fields in place and drops the cached Wallet and
-        AuditChain handles so the next access re-fetches them.
-        """
+        """Refetch this Agent's data from the API and return ``self``."""
         http = self._require_client()._http
         body = await http.request("GET", endpoints.agent(self.agent_id))
         fresh = AsyncAgent.model_validate(body)
         self.name = fresh.name
         self.description = fresh.description
+        self.tenant_id = fresh.tenant_id
+        self.status = fresh.status
+        self.public_key_ed25519 = fresh.public_key_ed25519
         self._wallet = None
         self._audit_chain = None
         return self
@@ -159,7 +167,7 @@ class AsyncAgent(BaseModel):
         """Fetch and cache the Wallet attached to this Agent."""
         if self._wallet is None:
             http = self._require_client()._http
-            body = await http.request("GET", endpoints.agent_wallet(self.agent_id))
+            body = await http.request("GET", endpoints.wallet(self.agent_id))
             wallet = AsyncWallet.model_validate(body)
             wallet._http = http
             self._wallet = wallet
@@ -182,20 +190,17 @@ class AsyncAgent(BaseModel):
         timeout: float | None = None,
         **extra: Any,
     ) -> InferenceResponse:
-        """Make a single Inference call routed through Ainfera.
-
-        Args:
-            model: Model identifier to route to.
-            messages: Chat messages in the standard role/content shape.
-            timeout: Per-call HTTP timeout in seconds. Overrides the
-                client default for this request only.
-            **extra: Additional request fields passed through verbatim.
-        """
-        payload: dict[str, Any] = {"model": model, "messages": messages, **extra}
+        """Make a single Inference call routed through Ainfera."""
+        payload: dict[str, Any] = {
+            "agent_id": self.agent_id,
+            "model": model,
+            "messages": messages,
+            **extra,
+        }
         http = self._require_client()._http
         body = await http.request(
             "POST",
-            endpoints.agent_inference(self.agent_id),
+            endpoints.inference(),
             json=payload,
             timeout=timeout,
         )
@@ -210,29 +215,31 @@ class AsyncAgent(BaseModel):
 
 
 class AgentsResource:
-    """Tenant-scoped collection of Agents. Accessed via ``client.agents``."""
+    """Tenant-scoped collection of Agents. Accessed via ``client.agents``.
+
+    SDK 1.1.0 (AIN-79): ``register`` hits ``POST /v1/agents/register`` (was
+    ``POST /v1/agents`` against pre-D4 mocks). The flat ``/v1/agents`` GET
+    is not exposed in production; ``list()`` is dropped until the API
+    surfaces it (tracked AIN-79 follow-up).
+    """
 
     def __init__(self, client: AinferaClient) -> None:
         self._client = client
         self._http: HttpClient = client._http
 
-    def register(self, *, name: str, description: str | None = None) -> Agent:
-        """Register a new Agent under the calling tenant."""
+    def register(self, *, tenant_id: str, name: str) -> Agent:
+        """Register a new Agent under the given tenant.
+
+        ``tenant_id`` is required by the API contract; multi-tenant users
+        explicitly name the tenant. Single-tenant users typically use
+        :meth:`signup` instead (follow-up — file under AIN-79).
+        """
         body = self._http.request(
             "POST",
-            endpoints.agents_collection(),
-            json={"name": name, "description": description},
+            endpoints.agent_register(),
+            json={"tenant_id": tenant_id, "name": name},
         )
         return self._bind(body)
-
-    def list(self, *, limit: int = 100) -> list[Agent]:
-        """List Agents under the calling tenant, newest first."""
-        body = self._http.request(
-            "GET",
-            endpoints.agents_collection(),
-            params={"limit": limit},
-        )
-        return [self._bind(raw) for raw in body.get("data", [])]
 
     def retrieve(self, agent_id: str) -> Agent:
         """Retrieve an Agent by id."""
@@ -252,23 +259,14 @@ class AsyncAgentsResource:
         self._client = client
         self._http: AsyncHttpClient = client._http
 
-    async def register(self, *, name: str, description: str | None = None) -> AsyncAgent:
-        """Register a new Agent under the calling tenant."""
+    async def register(self, *, tenant_id: str, name: str) -> AsyncAgent:
+        """Register a new Agent under the given tenant."""
         body = await self._http.request(
             "POST",
-            endpoints.agents_collection(),
-            json={"name": name, "description": description},
+            endpoints.agent_register(),
+            json={"tenant_id": tenant_id, "name": name},
         )
         return self._bind(body)
-
-    async def list(self, *, limit: int = 100) -> list[AsyncAgent]:
-        """List Agents under the calling tenant, newest first."""
-        body = await self._http.request(
-            "GET",
-            endpoints.agents_collection(),
-            params={"limit": limit},
-        )
-        return [self._bind(raw) for raw in body.get("data", [])]
 
     async def retrieve(self, agent_id: str) -> AsyncAgent:
         """Retrieve an Agent by id."""

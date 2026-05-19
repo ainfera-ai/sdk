@@ -7,7 +7,7 @@ the box. See https://ainfera.ai/docs/sdk-python for the full reference.
 from ainfera._version import __version__
 from ainfera.agent_card import AgentCard
 from ainfera.agents import Agent, AsyncAgent
-from ainfera.audit import AsyncAuditChain, AuditChain, AuditEvent
+from ainfera.audit import AsyncAuditChain, AuditChain, AuditEvent, AuditVerifyResult
 from ainfera.client import AinferaClient, AsyncAinferaClient
 from ainfera.exceptions import (
     AgentCardInvalid,
@@ -18,7 +18,7 @@ from ainfera.exceptions import (
     SpendPolicyExceeded,
     WalletInsufficient,
 )
-from ainfera.inference import Inference, InferenceResponse
+from ainfera.inference import InferenceResponse
 from ainfera.ledger import AsyncLedger, Ledger, LedgerEntry
 from ainfera.receipt import Receipt
 from ainfera.verify import verify_chain, verify_event_hash
@@ -34,7 +34,6 @@ __all__ = [
     "AsyncAgent",
     "AgentCard",
     # Inference
-    "Inference",
     "InferenceResponse",
     # Wallet / Ledger
     "Wallet",
@@ -46,6 +45,7 @@ __all__ = [
     "AuditEvent",
     "AuditChain",
     "AsyncAuditChain",
+    "AuditVerifyResult",
     # Receipt
     "Receipt",
     # Local verification primitives

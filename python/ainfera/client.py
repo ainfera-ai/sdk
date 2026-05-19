@@ -108,7 +108,18 @@ class AinferaClient:
         self.close()
 
     def _fetch_agent_pubkey(self, agent_id: str) -> bytes:
-        return self._http.get_bytes(endpoints.agent_pubkey(agent_id))
+        """Fetch an Agent's Ed25519 public key (PEM) via the agent retrieve endpoint.
+
+        SDK 1.1.0 (AIN-79): no dedicated ``/pubkey`` endpoint in prod — the
+        pubkey is a field on the ``GET /v1/agents/{id}`` Agent response.
+        """
+        body = self._http.request("GET", endpoints.agent(agent_id))
+        pem = body.get("public_key_ed25519")
+        if not isinstance(pem, str) or not pem:
+            raise AinferaError(
+                f"Agent {agent_id} response is missing public_key_ed25519"
+            )
+        return pem.encode("utf-8")
 
 
 class AsyncAinferaClient:
@@ -160,4 +171,11 @@ class AsyncAinferaClient:
         await self.aclose()
 
     async def _fetch_agent_pubkey(self, agent_id: str) -> bytes:
-        return await self._http.get_bytes(endpoints.agent_pubkey(agent_id))
+        """Fetch an Agent's Ed25519 public key (PEM) via the agent retrieve endpoint."""
+        body = await self._http.request("GET", endpoints.agent(agent_id))
+        pem = body.get("public_key_ed25519")
+        if not isinstance(pem, str) or not pem:
+            raise AinferaError(
+                f"Agent {agent_id} response is missing public_key_ed25519"
+            )
+        return pem.encode("utf-8")

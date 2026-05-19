@@ -1,11 +1,13 @@
 """Wallet — prepaid balance attached to an Agent.
 
-Maps to Ontology v1.0 §2 Wallet. D9 ships prepaid topup; D14+ adds x402
-USDC topup as a second funding path.
+Maps to Ontology v1.0 §2 Wallet. SDK 1.1.0 (AIN-79) realigned to the
+``/v1/wallets/{agent_id}`` + ``/v1/wallets/topup`` flat surface; the
+prior ``/v1/agents/{id}/wallet`` paths did not exist in prod.
 """
 
 from __future__ import annotations
 
+from decimal import Decimal
 from typing import TYPE_CHECKING
 
 from pydantic import BaseModel, ConfigDict, PrivateAttr
@@ -17,24 +19,31 @@ if TYPE_CHECKING:
 
 
 class Wallet(BaseModel):
-    """Prepaid balance attached to an Agent (sync flavor)."""
+    """Prepaid balance attached to an Agent (sync flavor).
+
+    The API returns only ``{agent_id, balance_usd}`` — no separate wallet_id.
+    Each Agent has exactly one Wallet, so the agent_id is the wallet's key.
+    """
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    wallet_id: str
     agent_id: str
-    balance_usd: float
+    balance_usd: Decimal
 
     _http: HttpClient | None = PrivateAttr(default=None)
 
-    def topup(self, amount_usd: float) -> Wallet:
-        """Top up this Wallet by ``amount_usd`` and return the refreshed Wallet."""
+    def topup(self, amount_usd: float | Decimal) -> Wallet:
+        """Top up this Wallet by ``amount_usd`` and return the refreshed Wallet.
+
+        Body carries ``agent_id`` per ``/v1/wallets/topup`` contract.
+        Response is the L3 TopupResponse — the SDK extracts ``new_balance_usd``.
+        """
         body = self._require_http().request(
             "POST",
-            endpoints.agent_wallet_topup(self.agent_id),
-            json={"amount_usd": amount_usd},
+            endpoints.wallet_topup(),
+            json={"agent_id": self.agent_id, "amount_usd": str(amount_usd)},
         )
-        self.balance_usd = float(body["balance_usd"])
+        self.balance_usd = Decimal(str(body["new_balance_usd"]))
         return self
 
     def _require_http(self) -> HttpClient:
@@ -50,20 +59,19 @@ class AsyncWallet(BaseModel):
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    wallet_id: str
     agent_id: str
-    balance_usd: float
+    balance_usd: Decimal
 
     _http: AsyncHttpClient | None = PrivateAttr(default=None)
 
-    async def topup(self, amount_usd: float) -> AsyncWallet:
+    async def topup(self, amount_usd: float | Decimal) -> AsyncWallet:
         """Top up this Wallet by ``amount_usd`` and return the refreshed Wallet."""
         body = await self._require_http().request(
             "POST",
-            endpoints.agent_wallet_topup(self.agent_id),
-            json={"amount_usd": amount_usd},
+            endpoints.wallet_topup(),
+            json={"agent_id": self.agent_id, "amount_usd": str(amount_usd)},
         )
-        self.balance_usd = float(body["balance_usd"])
+        self.balance_usd = Decimal(str(body["new_balance_usd"]))
         return self
 
     def _require_http(self) -> AsyncHttpClient:
