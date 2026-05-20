@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - **AsyncAgent.wallet** (AIN-196): use `wallet = await agent.wallet` or `await agent.get_wallet()` — no longer a coroutine method that breaks property-style access.
+- **verify_chain([])** now raises `AuditChainBroken` instead of returning true on empty chains.
+- **AuditEvent.previous_hash** accepts API `prev_hash` alias.
+- **AinferaClient.from_signup()** / **AsyncAinferaClient.from_signup()** implemented.
 
 ## [1.1.0] — 2026-05-19
 

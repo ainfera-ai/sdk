@@ -12,7 +12,7 @@ from types import TracebackType
 
 from ainfera._internal import endpoints
 from ainfera._internal.http import AsyncHttpClient, HttpClient
-from ainfera.agents import AgentsResource, AsyncAgentsResource
+from ainfera.agents import AgentsResource, AsyncAgentsResource, SignupResult
 from ainfera.exceptions import AinferaError
 from ainfera.receipt import Receipt
 
@@ -90,6 +90,17 @@ class AinferaClient:
         self._agents = AgentsResource(self)
         self._receipts = ReceiptsResource(self._http)
 
+    @classmethod
+    def from_signup(
+        cls,
+        result: SignupResult,
+        *,
+        base_url: str = DEFAULT_BASE_URL,
+        timeout: float = DEFAULT_TIMEOUT,
+    ) -> AinferaClient:
+        """Build a client from a :class:`~ainfera.agents.SignupResult`."""
+        return cls(api_key=result.api_key, base_url=base_url, timeout=timeout)
+
     @property
     def agents(self) -> AgentsResource:
         return self._agents
@@ -152,6 +163,17 @@ class AsyncAinferaClient:
         )
         self._agents = AsyncAgentsResource(self)
         self._receipts = AsyncReceiptsResource(self._http)
+
+    @classmethod
+    def from_signup(
+        cls,
+        result: SignupResult,
+        *,
+        base_url: str = DEFAULT_BASE_URL,
+        timeout: float = DEFAULT_TIMEOUT,
+    ) -> AsyncAinferaClient:
+        """Build a client from a :class:`~ainfera.agents.SignupResult`."""
+        return cls(api_key=result.api_key, base_url=base_url, timeout=timeout)
 
     @property
     def agents(self) -> AsyncAgentsResource:

@@ -78,8 +78,10 @@ def test_verify_chain_three_events_intact() -> None:
     assert verify_chain([e0, e1, e2]) is True
 
 
-def test_verify_chain_empty_is_ok() -> None:
-    assert verify_chain([]) is True
+def test_verify_chain_empty_raises() -> None:
+    with pytest.raises(AuditChainBroken) as exc:
+        verify_chain([])
+    assert exc.value.broken_at_seq == 0
 
 
 def test_verify_chain_detects_broken_hash() -> None:
@@ -99,6 +101,21 @@ def test_verify_chain_detects_previous_hash_mismatch() -> None:
     with pytest.raises(AuditChainBroken) as exc:
         verify_chain([e0, e1])
     assert exc.value.broken_at_seq == 1
+
+
+def test_audit_event_accepts_prev_hash_alias() -> None:
+    event = AuditEvent.model_validate(
+        {
+            "agent_id": "ag_test",
+            "seq": 0,
+            "event_type": "agent.registered",
+            "payload": {"x": 1},
+            "prev_hash": None,
+            "event_hash": "a" * 64,
+            "created_at": "2026-05-14T10:00:00Z",
+        }
+    )
+    assert event.previous_hash is None
 
 
 def test_verify_chain_detects_seq_gap() -> None:

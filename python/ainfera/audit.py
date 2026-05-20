@@ -16,7 +16,7 @@ from collections.abc import AsyncIterator, Iterator
 from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
-from pydantic import BaseModel, ConfigDict, PrivateAttr
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field, PrivateAttr
 
 from ainfera._internal import endpoints
 
@@ -45,7 +45,10 @@ class AuditEvent(BaseModel):
     seq: int
     event_type: str
     payload: dict[str, Any]
-    previous_hash: str | None = None
+    previous_hash: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("previous_hash", "prev_hash"),
+    )
     event_hash: str
     created_at: datetime
 

@@ -49,8 +49,11 @@ def verify_chain(events: list[AuditEvent]) -> bool:
     at the first broken link (mismatched hash or non-contiguous ``seq`` /
     ``previous_hash``) with ``broken_at_seq`` set.
     """
+    if not events:
+        raise AuditChainBroken("empty event list — nothing to verify", broken_at_seq=0)
+
     previous_hash: str | None = None
-    expected_seq = events[0].seq if events else 0
+    expected_seq = events[0].seq
 
     for event in events:
         if event.seq != expected_seq:

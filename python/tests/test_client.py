@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import ainfera
 import pytest
-from ainfera import AinferaClient, AinferaError, AsyncAinferaClient
+from ainfera import AinferaClient, AinferaError, AsyncAinferaClient, SignupResult
 
 
 def test_version_is_set() -> None:
@@ -60,5 +60,25 @@ def test_default_timeout_is_60s() -> None:
     client = AinferaClient(api_key="ak_test")
     try:
         assert client._http.timeout == 60.0
+    finally:
+        client.close()
+
+
+def test_from_signup_builds_client() -> None:
+    result = SignupResult.model_validate(
+        {
+            "agent_id": "ag_1",
+            "agent_handle": "h",
+            "tenant_id": "tn_1",
+            "owner_handle": "o",
+            "canonical_uri": "ainfera.ai/o/h",
+            "did_web": "did:ainfera:agent:ag_1",
+            "api_key": "ai_infera_test_key",
+            "agent_card_jws": "eyJhbGciOiJFZERTQSJ9.e30.e30",
+        }
+    )
+    client = AinferaClient.from_signup(result)
+    try:
+        assert client._http.api_key == "ai_infera_test_key"
     finally:
         client.close()
