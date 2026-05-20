@@ -1,13 +1,12 @@
 # SDK follow-up — 1.1.0 alignment with API Contract v1.0
 
-Captured 2026-05-15 D5 PM while wiring the quickstart example. The
-1.0.x SDK was written against pre-D4 mocks and several shapes have
-drifted from the production `/v1/*` API. Mock-based tests still pass
-but `examples/quickstart.py` had to drop to raw `httpx` because the
-SDK can't actually round-trip the inference flow.
+**Status: shipped on `main` (2026-05-20).** Track remaining polish in Linear:
 
-The gaps below are observed against `https://api.ainfera.ai/openapi.json`
-on 2026-05-15. Closing them is the 1.1.0 release.
+- [AIN-212](https://linear.app/ainfera/issue/AIN-212) — endpoint paths (Done in code)
+- [AIN-213](https://linear.app/ainfera/issue/AIN-213) — quickstart E2E (Done in code)
+- [AIN-214](https://linear.app/ainfera/issue/AIN-214) — pydantic models (Done in code)
+
+Historical notes below (pre-1.1.0). Kept for audit trail.
 
 ## Endpoint paths
 
