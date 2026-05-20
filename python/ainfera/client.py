@@ -46,9 +46,15 @@ class ReceiptsResource:
         self._http = http
 
     def retrieve(self, receipt_id: str) -> Receipt:
-        """Retrieve a Receipt by id."""
-        body = self._http.request("GET", endpoints.receipt(receipt_id))
-        return Receipt.model_validate(body)
+        """Receipt detail is embedded on each Inference response.
+
+        The API does not expose ``GET /v1/receipts/{id}``; use
+        ``agent.inference(...)`` and read ``response.receipt`` instead.
+        """
+        raise NotImplementedError(
+            "Receipts are returned inline on inference responses; "
+            "there is no GET /v1/receipts/{id} endpoint."
+        )
 
 
 class AsyncReceiptsResource:
@@ -58,9 +64,11 @@ class AsyncReceiptsResource:
         self._http = http
 
     async def retrieve(self, receipt_id: str) -> Receipt:
-        """Retrieve a Receipt by id."""
-        body = await self._http.request("GET", endpoints.receipt(receipt_id))
-        return Receipt.model_validate(body)
+        """Receipt detail is embedded on each Inference response."""
+        raise NotImplementedError(
+            "Receipts are returned inline on inference responses; "
+            "there is no GET /v1/receipts/{id} endpoint."
+        )
 
 
 class AinferaClient:

@@ -507,19 +507,7 @@ def test_audit_verify_remote(mock_api: respx.MockRouter) -> None:
     assert result.event_count == 42
 
 
-def test_receipt_retrieve(mock_api: respx.MockRouter) -> None:
-    mock_api.get("/v1/receipts/rcp_1").mock(
-        return_value=httpx.Response(
-            200,
-            json={
-                "receipt_id": "rcp_1",
-                "inference_id": "inf_1",
-                "audit_url": "https://ainfera.ai/audit/rcp_1",
-                "cost_usd": 0.01,
-            },
-        )
-    )
+def test_receipt_retrieve_not_implemented() -> None:
     client = AinferaClient(api_key="ak_test")
-    receipt = client.receipts.retrieve("rcp_1")
-    assert receipt.receipt_id == "rcp_1"
-    assert receipt.cost_usd == pytest.approx(0.01)
+    with pytest.raises(NotImplementedError, match="inline on inference"):
+        client.receipts.retrieve("rcp_1")
