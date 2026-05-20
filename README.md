@@ -5,7 +5,7 @@
 [![CI](https://github.com/ainfera-ai/sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/ainfera-ai/sdk/actions/workflows/ci.yml)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](./LICENSE)
 
-The Inference of AI Agents. Signed AgentCards, x402-ready Wallets, hash-chained AuditChains — out of the box.
+Agent-native inference routing by Ainfera. Signed AgentCards, provider-neutral routing, hash-chained AuditChains — out of the box.
 
 ## Install
 
@@ -35,7 +35,7 @@ print(response.receipt.audit_url)
 
 ## What is Ainfera?
 
-**The Inference of AI Agents.** Drain-proof wallet for AI agents. Your agent's wallet survives prompt injection. One Agent Card across Anthropic, OpenAI, and Together — more Providers in v1.7. Every call cryptographically audited. See [ainfera.ai](https://ainfera.ai).
+**The Inference of AI Agents.** Ainfera Routing picks the best model under your agent's budget and latency caps. One Agent Card across 50+ models. Every routing decision and inference call cryptographically audited. See [ainfera.ai](https://ainfera.ai) and [ainfera-ai/routing](https://github.com/ainfera-ai/routing).
 
 ## Features
 
