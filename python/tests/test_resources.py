@@ -10,6 +10,7 @@ from __future__ import annotations
 import hashlib
 import json
 from datetime import datetime, timezone
+from decimal import Decimal
 
 import httpx
 import pytest
@@ -205,6 +206,39 @@ def test_wallet_topup_body_carries_agent_id(mock_api: respx.MockRouter) -> None:
     sent = route.calls.last.request
     body = json.loads(sent.content)
     assert body == {"agent_id": _AID, "amount_usd": "5"}
+
+
+def test_agent_ledger_entries(mock_api: respx.MockRouter) -> None:
+    mock_api.get(f"/v1/agents/{_AID}").mock(
+        return_value=httpx.Response(200, json=_agent_body())
+    )
+    ledger_route = mock_api.get(f"/v1/ledger/{_AID}").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "agent_id": _AID,
+                "balance_usd": "12.50",
+                "entries": [
+                    {
+                        "id": "le_1",
+                        "agent_id": _AID,
+                        "amount_usd": "12.50",
+                        "balance_after_usd": "12.50",
+                        "kind": "topup",
+                        "memo": "grant",
+                        "created_at": "2026-05-20T12:00:00Z",
+                    }
+                ],
+            },
+        )
+    )
+    client = AinferaClient(api_key="ak_test")
+    agent = client.agents.retrieve(_AID)
+    entries = agent.ledger.entries(limit=10)
+    assert ledger_route.call_count == 1
+    assert len(entries) == 1
+    assert entries[0].kind == "topup"
+    assert agent.ledger.balance == Decimal("12.50")
 
 
 def test_inference_returns_response(mock_api: respx.MockRouter) -> None:

@@ -21,6 +21,7 @@ class InferenceResponse(BaseModel):
     drifted from production; 1.1.0 surfaces the real fields.
     """
 
+    agent_id: str | None = None
     inference_id: str
     receipt_id: str
     content: str

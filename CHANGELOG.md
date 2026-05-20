@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **verify_chain([])** now raises `AuditChainBroken` instead of returning true on empty chains.
 - **AuditEvent.previous_hash** accepts API `prev_hash` alias.
 - **AinferaClient.from_signup()** / **AsyncAinferaClient.from_signup()** implemented.
+- **403 mapping** (FLAW-02): only `spend_policy_exceeded` bodies raise `SpendPolicyExceeded`; other 403s are `APIError`.
+- **Agent.ledger** / **AsyncAgent.ledger** (BUG-07): handle for `GET /v1/ledger/{agent_id}`.
 
 ## [1.1.0] — 2026-05-19
 

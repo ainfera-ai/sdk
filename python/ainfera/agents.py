@@ -67,6 +67,7 @@ class Agent(BaseModel):
 
     _client: AinferaClient | None = PrivateAttr(default=None)
     _wallet: Wallet | None = PrivateAttr(default=None)
+    _ledger: Ledger | None = PrivateAttr(default=None)
     _audit_chain: AuditChain | None = PrivateAttr(default=None)
 
     def refresh(self) -> Agent:
@@ -80,6 +81,7 @@ class Agent(BaseModel):
         self.status = fresh.status
         self.public_key_ed25519 = fresh.public_key_ed25519
         self._wallet = None
+        self._ledger = None
         self._audit_chain = None
         return self
 
@@ -114,9 +116,11 @@ class Agent(BaseModel):
     @property
     def ledger(self) -> Ledger:
         """The append-only Ledger for this Agent (``GET /v1/ledger/{agent_id}``)."""
-        book = Ledger(agent_id=self.agent_id)
-        book._http = self._require_client()._http
-        return book
+        if self._ledger is None:
+            book = Ledger(agent_id=self.agent_id)
+            book._http = self._require_client()._http
+            self._ledger = book
+        return self._ledger
 
     def inference(
         self,
@@ -168,6 +172,7 @@ class AsyncAgent(BaseModel):
 
     _client: AsyncAinferaClient | None = PrivateAttr(default=None)
     _wallet: AsyncWallet | None = PrivateAttr(default=None)
+    _ledger: AsyncLedger | None = PrivateAttr(default=None)
     _audit_chain: AsyncAuditChain | None = PrivateAttr(default=None)
 
     async def refresh(self) -> AsyncAgent:
@@ -181,6 +186,7 @@ class AsyncAgent(BaseModel):
         self.status = fresh.status
         self.public_key_ed25519 = fresh.public_key_ed25519
         self._wallet = None
+        self._ledger = None
         self._audit_chain = None
         return self
 
@@ -223,9 +229,11 @@ class AsyncAgent(BaseModel):
     @property
     def ledger(self) -> AsyncLedger:
         """The append-only Ledger for this Agent (``GET /v1/ledger/{agent_id}``)."""
-        book = AsyncLedger(agent_id=self.agent_id)
-        book._http = self._require_client()._http
-        return book
+        if self._ledger is None:
+            book = AsyncLedger(agent_id=self.agent_id)
+            book._http = self._require_client()._http
+            self._ledger = book
+        return self._ledger
 
     async def inference(
         self,
