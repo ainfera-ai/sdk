@@ -11,6 +11,7 @@ The ``agent_id`` field aliases ``id`` so both shapes round-trip cleanly.
 
 from __future__ import annotations
 
+from decimal import Decimal
 from typing import TYPE_CHECKING, Any
 
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field, PrivateAttr
@@ -24,6 +25,26 @@ from ainfera.wallet import AsyncWallet, Wallet
 if TYPE_CHECKING:
     from ainfera._internal.http import AsyncHttpClient, HttpClient
     from ainfera.client import AinferaClient, AsyncAinferaClient
+
+
+class _AsyncWalletRef:
+    """Awaitable wallet handle for :class:`AsyncAgent`.
+
+    Use ``wallet = await agent.wallet`` (not ``agent.wallet`` as a bare
+    property like sync :class:`Agent`).
+    """
+
+    __slots__ = ("_agent",)
+
+    def __init__(self, agent: AsyncAgent) -> None:
+        self._agent = agent
+
+    def __await__(self):
+        return self._agent._fetch_wallet().__await__()
+
+    async def topup(self, amount_usd: float | Decimal) -> AsyncWallet:
+        wallet = await self
+        return await wallet.topup(amount_usd=amount_usd)
 
 
 class Agent(BaseModel):
@@ -163,8 +184,8 @@ class AsyncAgent(BaseModel):
         card._async_client = self._client
         return card
 
-    async def wallet(self) -> AsyncWallet:
-        """Fetch and cache the Wallet attached to this Agent."""
+    async def _fetch_wallet(self) -> AsyncWallet:
+        """Load and cache the Wallet attached to this Agent."""
         if self._wallet is None:
             http = self._require_client()._http
             body = await http.request("GET", endpoints.wallet(self.agent_id))
@@ -172,6 +193,15 @@ class AsyncAgent(BaseModel):
             wallet._http = http
             self._wallet = wallet
         return self._wallet
+
+    async def get_wallet(self) -> AsyncWallet:
+        """Fetch and cache the Wallet attached to this Agent."""
+        return await self._fetch_wallet()
+
+    @property
+    def wallet(self) -> _AsyncWalletRef:
+        """Awaitable wallet handle — ``w = await agent.wallet``."""
+        return _AsyncWalletRef(self)
 
     @property
     def audit_chain(self) -> AsyncAuditChain:

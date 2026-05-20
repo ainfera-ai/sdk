@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **AsyncAgent.wallet** (AIN-196): use `wallet = await agent.wallet` or `await agent.get_wallet()` — no longer a coroutine method that breaks property-style access.
+
 ## [1.1.0] — 2026-05-19
 
 API alignment release. Closes [AIN-79](https://linear.app/ainfera/issue/AIN-79).

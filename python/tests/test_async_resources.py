@@ -181,3 +181,27 @@ async def test_async_audit_chain_paginates_via_since_seq(
         assert [e.seq for e in events] == [0, 1]
     finally:
         await client.aclose()
+
+
+@pytest.mark.asyncio
+async def test_async_agent_wallet_awaitable(mock_api: respx.MockRouter) -> None:
+    """AIN-196: AsyncAgent.wallet is awaitable, not a mistaken sync property."""
+    mock_api.get(f"/v1/agents/{_AID}").mock(
+        return_value=httpx.Response(200, json=_agent_body())
+    )
+    wallet_route = mock_api.get(f"/v1/wallets/{_AID}").mock(
+        return_value=httpx.Response(
+            200, json={"agent_id": _AID, "balance_usd": "3.50"}
+        )
+    )
+    client = AsyncAinferaClient(api_key="ak_test")
+    try:
+        agent = await client.agents.retrieve(_AID)
+        wallet = await agent.wallet
+        assert float(wallet.balance_usd) == 3.5
+        assert wallet_route.call_count == 1
+        again = await agent.get_wallet()
+        assert float(again.balance_usd) == 3.5
+        assert wallet_route.call_count == 1
+    finally:
+        await client.aclose()
