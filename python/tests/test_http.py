@@ -26,12 +26,32 @@ def test_402_maps_to_wallet_insufficient(mock_api: respx.MockRouter) -> None:
 
 def test_403_maps_to_spend_policy_exceeded(mock_api: respx.MockRouter) -> None:
     mock_api.post("/v1/inference").mock(
-        return_value=httpx.Response(403, json={"message": "policy blocked"})
+        return_value=httpx.Response(
+            403,
+            json={
+                "code": "spend_policy_exceeded",
+                "error": "spend_policy_exceeded",
+                "message": "policy blocked",
+            },
+        )
     )
     client = AinferaClient(api_key="ak_test")
     agent = _bare_agent(client, "ag_x")
     with pytest.raises(SpendPolicyExceeded):
         agent.inference(model="x", messages=[])
+
+
+def test_403_without_spend_code_maps_to_api_error(mock_api: respx.MockRouter) -> None:
+    mock_api.post("/v1/inference").mock(
+        return_value=httpx.Response(
+            403, json={"detail": "agent belongs to another tenant"}
+        )
+    )
+    client = AinferaClient(api_key="ak_test")
+    agent = _bare_agent(client, "ag_x")
+    with pytest.raises(APIError) as exc:
+        agent.inference(model="x", messages=[])
+    assert exc.value.status_code == 403
 
 
 def test_422_model_unavailable_carries_model_and_provider(

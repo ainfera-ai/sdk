@@ -33,6 +33,32 @@ print(response.text)
 print(response.receipt.audit_url)
 ```
 
+### Signup bootstrap (`from_signup`)
+
+One-shot registration returns an API key and Agent bundle — persist the key, then build a client:
+
+```python
+from ainfera import AinferaClient
+
+result = AinferaClient().agents.signup(
+    agent_handle="my-bot",
+    owner_handle="your-github-login",
+)
+client = AinferaClient.from_signup(result)
+agent = client.agents.retrieve(result.agent_id)
+entries = agent.ledger.entries(limit=20)
+```
+
+### Ledger on `Agent`
+
+Each agent exposes an append-only ledger handle backed by `GET /v1/ledger/{agent_id}`:
+
+```python
+balance = agent.ledger.balance  # set after entries()
+for entry in agent.ledger.entries(limit=50):
+    print(entry.kind, entry.amount_usd)
+```
+
 ## What is Ainfera?
 
 **The Inference of AI Agents.** Ainfera Routing picks the best model under your agent's budget and latency caps. One Agent Card across 50+ models. Every routing decision and inference call cryptographically audited. See [ainfera.ai](https://ainfera.ai) and [ainfera-ai/routing](https://github.com/ainfera-ai/routing).

@@ -73,6 +73,18 @@ def _detail_message(body: dict[str, Any]) -> str | None:
     return None
 
 
+def _is_spend_policy_exceeded(body: dict[str, Any]) -> bool:
+    """True only for gateway spend-cap refusals, not generic 403s."""
+    code = body.get("code") or body.get("error")
+    if code == "spend_policy_exceeded":
+        return True
+    detail = body.get("detail")
+    if isinstance(detail, dict):
+        dcode = detail.get("code") or detail.get("error")
+        return dcode == "spend_policy_exceeded"
+    return False
+
+
 def _map_error(response: httpx.Response) -> APIError:
     body = _parse_body(response)
     message = (
@@ -87,7 +99,9 @@ def _map_error(response: httpx.Response) -> APIError:
     if status == 402:
         return WalletInsufficient(message, body=body)
     if status == 403:
-        return SpendPolicyExceeded(message, body=body)
+        if _is_spend_policy_exceeded(body):
+            return SpendPolicyExceeded(message, body=body)
+        return APIError(message, status_code=status, body=body)
     if status == 422:
         kind = body.get("error") or body.get("code")
         if kind == "model_unavailable":

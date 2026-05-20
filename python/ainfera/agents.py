@@ -20,6 +20,7 @@ from ainfera._internal import endpoints
 from ainfera.agent_card import AgentCard
 from ainfera.audit import AsyncAuditChain, AuditChain
 from ainfera.inference import InferenceResponse
+from ainfera.ledger import AsyncLedger, Ledger
 from ainfera.wallet import AsyncWallet, Wallet
 
 if TYPE_CHECKING:
@@ -109,6 +110,13 @@ class Agent(BaseModel):
             chain._http = self._require_client()._http
             self._audit_chain = chain
         return self._audit_chain
+
+    @property
+    def ledger(self) -> Ledger:
+        """The append-only Ledger for this Agent (``GET /v1/ledger/{agent_id}``)."""
+        book = Ledger(agent_id=self.agent_id)
+        book._http = self._require_client()._http
+        return book
 
     def inference(
         self,
@@ -211,6 +219,13 @@ class AsyncAgent(BaseModel):
             chain._http = self._require_client()._http
             self._audit_chain = chain
         return self._audit_chain
+
+    @property
+    def ledger(self) -> AsyncLedger:
+        """The append-only Ledger for this Agent (``GET /v1/ledger/{agent_id}``)."""
+        book = AsyncLedger(agent_id=self.agent_id)
+        book._http = self._require_client()._http
+        return book
 
     async def inference(
         self,
