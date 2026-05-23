@@ -133,7 +133,9 @@ class Agent(BaseModel):
         """Make a single Inference call routed through Ainfera.
 
         Hits flat ``POST /v1/inference``; agent_id travels in the body.
-        Set ``model="ainfera-auto"`` to dispatch through L2 Routing.
+        Set ``model="ainfera-mithril"`` to dispatch through L2 Routing
+        (the prime-brokerage default — let Ainfera pick the best route).
+        ``"ainfera-auto"`` remains a silent alias for legacy callers.
         """
         payload: dict[str, Any] = {
             "agent_id": self.agent_id,
