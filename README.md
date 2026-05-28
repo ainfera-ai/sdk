@@ -61,7 +61,7 @@ for entry in agent.ledger.entries(limit=50):
 
 ## What is Ainfera?
 
-**The Inference of AI Agents.** Mithril (Ainfera's routing brain) picks the best model under your agent's budget and latency caps. One Agent Card across 50+ models. Every routing decision and inference call cryptographically audited. See [ainfera.ai](https://ainfera.ai) and the [`ainfera-routing`](https://github.com/ainfera-ai/routing) decision library.
+**The Inference of AI Agents.** Ainfera Inference (the flagship product — the routing brain) picks the best model under your agent's budget and latency caps. Point at `ainfera-inference` and trust the researched decision. One Agent Card across 50+ models. Every routing decision and inference call cryptographically audited. See [ainfera.ai](https://ainfera.ai) and the [`ainfera-routing`](https://github.com/ainfera-ai/routing) decision library.
 
 ## Features
 

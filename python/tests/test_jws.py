@@ -7,13 +7,15 @@ import json
 import pytest
 from ainfera import AgentCard, AgentCardInvalid
 from ainfera._internal.jws import verify_compact
-from jose import jws
+from joserfc import jws
+from joserfc.jwk import OctKey
 
 SECRET = "ainfera-test-secret-do-not-use-in-prod"
 
 
 def _sign(payload: dict[str, object], alg: str = "HS256") -> str:
-    return jws.sign(json.dumps(payload).encode("utf-8"), SECRET, algorithm=alg)
+    key = OctKey.import_key(SECRET)
+    return jws.serialize_compact({"alg": alg}, json.dumps(payload).encode("utf-8"), key)
 
 
 def test_verify_compact_happy_path() -> None:
@@ -37,7 +39,7 @@ def test_verify_compact_rejects_wrong_key() -> None:
 
 
 def test_verify_compact_rejects_alg_none() -> None:
-    # python-jose's `sign` won't emit `alg: none`, so we craft it manually.
+    # joserfc.serialize_compact will not emit `alg: none`; we craft it by hand.
     header = '{"alg":"none","typ":"JWT"}'
     body = '{"agent_id":"ag_pwned"}'
     import base64
