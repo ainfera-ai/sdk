@@ -53,3 +53,6 @@ htmlcov/
 # .claude/CLAUDE.md and must stay untracked. AIN-183 P0-1 (2026-05-19)
 # removed prior whitelist exceptions across all repos in the org.
 .claude/*
+
+# Cursor config — removed AIN-296, kept out
+.cursor/
