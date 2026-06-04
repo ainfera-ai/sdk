@@ -21,7 +21,7 @@ cd python && uv run pytest        # client, resources, agent-card signing/verify
 Done = tests green **and** a signed Agent Card round-trips through routed inference + audit verify. PR opened ≠ shipped.
 
 ## Secrets — hard rules
-- `.env` is gitignored; `.env.example` is the template. `AINFERA_API_KEY` (`ai_infera_*`) comes from the environment only — never commit, never echo a value.
+- `.env` is gitignored; `.env.example` is the template. `AINFERA_API_KEY` (`ainfera_*`) comes from the environment only — never commit, never echo a value.
 
 ## License
 Apache-2.0. © Ainfera Inc. 2026.
