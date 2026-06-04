@@ -73,12 +73,12 @@ def test_from_signup_builds_client() -> None:
             "owner_handle": "o",
             "canonical_uri": "ainfera.ai/o/h",
             "did_web": "did:ainfera:agent:ag_1",
-            "api_key": "ai_infera_test_key",
+            "api_key": "ainfera_test_key",
             "agent_card_jws": "eyJhbGciOiJFZERTQSJ9.e30.e30",
         }
     )
     client = AinferaClient.from_signup(result)
     try:
-        assert client._http.api_key == "ai_infera_test_key"
+        assert client._http.api_key == "ainfera_test_key"
     finally:
         client.close()

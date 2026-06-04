@@ -45,7 +45,7 @@ def _signup_body(
         "owner_handle": "github_user",
         "canonical_uri": f"ainfera.ai/github_user/{agent_handle}",
         "did_web": f"did:ainfera:agent:{agent_id}",
-        "api_key": "ai_infera_test_oneshot_FAKE",
+        "api_key": "ainfera_test_oneshot_FAKE",
         "agent_card_jws": "eyJhbGciOiJFZERTQSIsImtpZCI6InRlc3QifQ.PAYLOAD.SIG",
     }
 
@@ -73,7 +73,7 @@ def test_agent_signup_returns_bundle(mock_api: respx.MockRouter) -> None:
     assert result.agent_id == _AID
     assert result.agent_handle == "quickstart-1"
     assert result.tenant_id == "tn_1"
-    assert result.api_key == "ai_infera_test_oneshot_FAKE"
+    assert result.api_key == "ainfera_test_oneshot_FAKE"
     assert result.did_web == f"did:ainfera:agent:{_AID}"
 
 
