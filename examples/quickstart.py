@@ -35,7 +35,8 @@ import os
 import sys
 import time
 
-from ainfera import AinferaClient, __version__ as sdk_version
+from ainfera import AinferaClient
+from ainfera import __version__ as sdk_version
 
 API_BASE = os.environ.get("AINFERA_API_BASE", "https://api.ainfera.ai")
 
