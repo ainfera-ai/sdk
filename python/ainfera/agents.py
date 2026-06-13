@@ -11,6 +11,7 @@ The ``agent_id`` field aliases ``id`` so both shapes round-trip cleanly.
 
 from __future__ import annotations
 
+from collections.abc import Generator
 from decimal import Decimal
 from typing import TYPE_CHECKING, Any
 
@@ -40,7 +41,7 @@ class _AsyncWalletRef:
     def __init__(self, agent: AsyncAgent) -> None:
         self._agent = agent
 
-    def __await__(self):
+    def __await__(self) -> Generator[Any, None, AsyncWallet]:
         return self._agent._fetch_wallet().__await__()
 
     async def topup(self, amount_usd: float | Decimal) -> AsyncWallet:
