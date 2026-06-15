@@ -11,11 +11,11 @@ signed Inference through `claude-haiku-4-5`, prints the audit URLs you
 can verify.
 
 ```bash
-pip install --no-cache-dir 'ainfera==1.0.1'
+pip install --no-cache-dir 'ainfera==1.1.0'
 python examples/quickstart.py
 ```
 
-Output should end with `✅ Soft launch verified`. The minted Agent
+Output should end with `✅ Quickstart verified — your first signed Inference is on chain.` The minted Agent
 appears on `https://api.ainfera.ai/v1/audit/public` within seconds.
 
 Set `GITHUB_USER=<your-handle>` before running to make the canonical
