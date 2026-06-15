@@ -96,14 +96,12 @@ against `ainfera_api/routers/` on 2026-05-19.
 | (none) | `GET  /v1/audit/{agent_id}/verify` |
 | (none) | `GET  /v1/audit/{agent_id}/annex-iv` |
 
-### Still deferred
+### Delivered in this release (previously deferred)
 
-- **`POST /v1/agents/signup`** (the self-serve tenant+agent+wallet
-  bundle): API endpoint exists, SDK method is a follow-up. File under
-  AIN-79.
-- **`examples/quickstart.py`** end-to-end run against prod: tracked
-  as Piece 3 of AIN-79; requires founder-provided test API key and
-  prod smoke time.
+- **`POST /v1/agents/signup`**: `AgentsResource.signup()` and
+  `AsyncAgentsResource.signup()` are fully implemented (AIN-79 complete).
+- **`examples/quickstart.py`**: end-to-end run against prod is implemented
+  and ships with this release.
 
 ## [1.0.1] — 2026-05-15
 

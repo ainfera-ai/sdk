@@ -21,7 +21,7 @@ Requires Python 3.10+.
 from ainfera import AinferaClient
 
 # api_key also reads from the AINFERA_API_KEY environment variable
-client = AinferaClient(api_key="ak_...")
+client = AinferaClient(api_key="ainfera_...")
 agent = client.agents.register(name="my-agent")
 agent.wallet.topup(amount_usd=10)
 

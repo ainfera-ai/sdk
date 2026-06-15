@@ -2,6 +2,6 @@
 
 from ainfera import AinferaClient
 
-client = AinferaClient(api_key="ak_...")
-agent = client.agents.register(name="my-agent", description="My first Ainfera agent")
+client = AinferaClient(api_key="ainfera_...")
+agent = client.agents.register(tenant_id="ten_...", name="my-agent")
 print(agent.agent_id)
