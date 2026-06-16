@@ -17,46 +17,49 @@ Requires Python 3.10+.
 
 ## Quickstart
 
-```python
-from ainfera import AinferaClient
-
-# api_key also reads from the AINFERA_API_KEY environment variable
-client = AinferaClient(api_key="ak_...")
-agent = client.agents.register(name="my-agent")
-agent.wallet.topup(amount_usd=10)
-
-response = agent.inference(
-    model="claude-opus-4-7",
-    messages=[{"role": "user", "content": "Hello"}],
-)
-print(response.text)
-print(response.receipt.audit_url)
-```
-
-### Signup bootstrap (`from_signup`)
-
-One-shot registration returns an API key and Agent bundle — persist the key, then build a client:
+One-shot signup provisions a Tenant + Agent + Wallet and returns a one-time
+API key — persist it, then build a bound client and run a signed Inference:
 
 ```python
 from ainfera import AinferaClient
 
+# The signup endpoint is public — no API key required for this call.
 result = AinferaClient().agents.signup(
     agent_handle="my-bot",
     owner_handle="your-github-login",
 )
+print(result.api_key)  # shown once — save it
+
 client = AinferaClient.from_signup(result)
 agent = client.agents.retrieve(result.agent_id)
-entries = agent.ledger.entries(limit=20)
+
+response = agent.inference(
+    model="claude-haiku-4-5",
+    messages=[{"role": "user", "content": "Hello"}],
+    max_tokens=20,
+)
+print(response.content)     # response.text is a deprecated 1.0.x alias
+print(response.receipt_id)  # links to this call's AuditChain entry
 ```
 
-### Ledger on `Agent`
-
-Each agent exposes an append-only ledger handle backed by `GET /v1/ledger/{agent_id}`:
+If you already hold a key (also read from the `AINFERA_API_KEY` environment
+variable), construct the client directly and retrieve an existing Agent:
 
 ```python
+client = AinferaClient(api_key="ainfera_...")
+agent = client.agents.retrieve("agent_...")
+```
+
+### Ledger and AuditChain on `Agent`
+
+Each agent exposes an append-only ledger handle backed by
+`GET /v1/ledger/{agent_id}`, and a locally-verifiable AuditChain:
+
+```python
+entries = agent.ledger.entries(limit=20)
 balance = agent.ledger.balance  # set after entries()
-for entry in agent.ledger.entries(limit=50):
-    print(entry.kind, entry.amount_usd)
+
+ok = agent.audit_chain.verify()  # walks the chain, verifies hashes offline
 ```
 
 ## What is Ainfera?
@@ -66,7 +69,7 @@ for entry in agent.ledger.entries(limit=50):
 ## Features
 
 - **Signed AgentCards** per Agent (JWS, RFC 7515)
-- **Provider-neutral routing** across Anthropic, OpenAI, Together (more soon)
+- **Provider-neutral routing** across 50+ models from many providers (Anthropic, OpenAI, Together, and more)
 - **Atomic per-call settlement** out of an Agent-scoped Wallet
 - **Tamper-evident hash-chained AuditChain** for every Agent
 - **Local verification** — auditors can verify a chain offline, no Ainfera trust required
