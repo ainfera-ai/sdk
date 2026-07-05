@@ -1,99 +1,24 @@
-# ainfera — Python SDK for Ainfera
+# sdk
 
-[![PyPI version](https://img.shields.io/pypi/v/ainfera.svg)](https://pypi.org/project/ainfera/)
-[![Python versions](https://img.shields.io/pypi/pyversions/ainfera.svg)](https://pypi.org/project/ainfera/)
-[![CI](https://github.com/ainfera-ai/sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/ainfera-ai/sdk/actions/workflows/ci.yml)
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](./LICENSE)
+Agent-native inference routing by Ainfera. Python SDK — signed AgentCards, routed inference, audit c
 
-Agent-native inference routing by Ainfera. Signed AgentCards, provider-neutral routing, hash-chained AuditChains — out of the box.
+## Details
 
-## Install
+| | |
+|---|---|
+| **Visibility** | PUBLIC |
+| **Primary Language** | Python |
+| **Created** | 2026-05-14 |
+| **Last Updated** | 2026-06-16 |
 
-```bash
-pip install ainfera
-```
+## Quick Start
 
-Requires Python 3.10+.
-
-## Quickstart
-
-One-shot signup provisions a Tenant + Agent + Wallet and returns a one-time
-API key — persist it, then build a bound client and run a signed Inference:
-
-```python
-from ainfera import AinferaClient
-
-# The signup endpoint is public — no API key required for this call.
-result = AinferaClient().agents.signup(
-    agent_handle="my-bot",
-    owner_handle="your-github-login",
-)
-print(result.api_key)  # shown once — save it
-
-client = AinferaClient.from_signup(result)
-agent = client.agents.retrieve(result.agent_id)
-
-response = agent.inference(
-    model="claude-haiku-4-5",
-    messages=[{"role": "user", "content": "Hello"}],
-    max_tokens=20,
-)
-print(response.content)     # response.text is a deprecated 1.0.x alias
-print(response.receipt_id)  # links to this call's AuditChain entry
-```
-
-If you already hold a key (also read from the `AINFERA_API_KEY` environment
-variable), construct the client directly and retrieve an existing Agent:
-
-```python
-client = AinferaClient(api_key="ainfera_...")
-agent = client.agents.retrieve("agent_...")
-```
-
-### Ledger and AuditChain on `Agent`
-
-Each agent exposes an append-only ledger handle backed by
-`GET /v1/ledger/{agent_id}`, and a locally-verifiable AuditChain:
-
-```python
-entries = agent.ledger.entries(limit=20)
-balance = agent.ledger.balance  # set after entries()
-
-ok = agent.audit_chain.verify()  # walks the chain, verifies hashes offline
-```
-
-## What is Ainfera?
-
-**The Inference of AI Agents.** Ainfera Inference (the flagship product — the routing brain) picks the best model under your agent's budget and latency caps. Point at `ainfera-inference` and trust the researched decision. One Agent Card across 50+ models. Every routing decision and inference call cryptographically audited. See [ainfera.ai](https://ainfera.ai) and the [`ainfera-routing`](https://github.com/ainfera-ai/routing) decision library.
-
-## Features
-
-- **Signed AgentCards** per Agent (JWS, RFC 7515)
-- **Provider-neutral routing** across 50+ models from many providers (Anthropic, OpenAI, Together, and more)
-- **Atomic per-call settlement** out of an Agent-scoped Wallet
-- **Tamper-evident hash-chained AuditChain** for every Agent
-- **Local verification** — auditors can verify a chain offline, no Ainfera trust required
-- **Sync + async** clients sharing one resource surface
-
-## Concepts
-
-- [Agent](https://ainfera.ai/concepts/agent)
-- [AgentCard](https://ainfera.ai/concepts/agent-card)
-- [Inference](https://ainfera.ai/concepts/inference)
-- [Wallet](https://ainfera.ai/concepts/wallet)
-- [AuditChain](https://ainfera.ai/concepts/audit-chain)
-
-## Compose, don't invent
-
-This SDK is a thin wrapper around the Ainfera API. The underlying primitives align with — and link to — public standards work:
-
-- **[Open Agent Identity (OAI) Spec](https://openagentidentity.org)** — Autonomy Next, Inc., draft v1.0.5 (Feb 2026)
-- **[Mastercard Verifiable Intent](https://www.mastercard.com/us/en/news-and-trends/stories/2026/verifiable-intent.html)** — open agentic-commerce trust layer (March 2026)
-- **[x402 Foundation](https://x402.foundation/)** — HTTP-native payments protocol, Linux Foundation (April 2026)
-- **[NIST AI Agent Standards Initiative](https://www.nist.gov/caisi/ai-agent-standards-initiative)** — NIST CAISI (Feb 2026)
-- **[EU AI Act Annex IV](https://artificialintelligenceact.eu/annex/4/)** — technical documentation for high-risk AI systems (Regulation 2024/1689)
-- **[JWS, RFC 7515](https://www.rfc-editor.org/rfc/rfc7515)** — used internally for AgentCard signing
+<!-- Add quick-start instructions here -->
 
 ## License
 
-Apache 2.0. See [LICENSE](./LICENSE).
+This repository is part of the Ainfera project.
+
+## Status
+
+[![CI](https://github.com/ainfera-ai/sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/ainfera-ai/sdk/actions)
