@@ -4,55 +4,35 @@ __pycache__/
 *$py.class
 *.so
 .Python
-*.egg
-*.egg-info/
-.eggs/
-
-# Build artifacts
 build/
+develop-eggs/
 dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
 wheels/
-*.whl
-*.tar.gz
+*.egg-info/
+.installed.cfg
+*.egg
+.mypy_cache/
+.pytest_cache/
+.hypothesis/
 
-# Virtual envs / package managers
+# Virtual env
 .venv/
 venv/
-env/
-.python-version
 
-# uv
-uv.lock
-
-# Testing / coverage / type checking
-.pytest_cache/
-.coverage
-.coverage.*
-htmlcov/
-.mypy_cache/
-.ruff_cache/
-.tox/
-
-# IDE / editor
+# IDE
 .vscode/
 .idea/
-*.swp
-*~
-.DS_Store
 
-# Secrets — never commit
-.env
-.env.*
-!.env.example
-
-# `ainfera install` writes tenant api keys here
-.ainfera/
-
-# Claude Code config — private by default. Founder Workspace context
-# (internal fleet topology, brand spec, founder email) lives in
-# .claude/CLAUDE.md and must stay untracked. AIN-183 P0-1 (2026-05-19)
-# removed prior whitelist exceptions across all repos in the org.
-.claude/*
-
-# Cursor config — removed AIN-296, kept out
-.cursor/
+# Test
+coverage.xml
+*.cover
+htmlcov/
+.tox/

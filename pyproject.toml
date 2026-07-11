@@ -1,90 +1,49 @@
+# sdk
+
+Agent-native inference routing by Ainfera. Python SDK — signed AgentCards, routed inference, audit c
+
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
-name = "ainfera"
-version = "1.1.0"
-description = "The Inference of AI Agents. Drain-proof wallets, signed AgentCards (JWS), hash-chained AuditChains — out of the box."
+name = "sdk"
+version = "0.1.0"
+description = "Agent-native inference routing by Ainfera. Python SDK — signed AgentCards, routed inference, audit c"
 readme = "README.md"
-license = { text = "Apache-2.0" }
 requires-python = ">=3.10"
-authors = [
-    { name = "Ainfera Inc.", email = "hello@ainfera.ai" },
-]
-keywords = ["agents", "inference", "ai", "llm", "audit", "x402"]
+license = {text = "Apache-2.0"}
+authors = [{name = "Ainfera Inc"}]
 classifiers = [
-    "Development Status :: 3 - Alpha",
-    "Intended Audience :: Developers",
-    "License :: OSI Approved :: Apache Software License",
-    "Operating System :: OS Independent",
+    "Development Status :: 2 - Pre-Alpha",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
-    "Typing :: Typed",
-]
-dependencies = [
-    "httpx>=0.27,<1.0",
-    "pydantic>=2.0,<3.0",
-    "joserfc>=1.0,<2.0",
 ]
 
 [project.optional-dependencies]
-cli = [
-    "click>=8.1,<9.0",
-    "pyyaml>=6.0,<7.0",
-]
-
-[project.scripts]
-ainfera = "ainfera.cli:main"
-
-[project.urls]
-Homepage = "https://ainfera.ai"
-Documentation = "https://ainfera.ai/docs/sdk-python"
-Repository = "https://github.com/ainfera-ai/sdk"
-Issues = "https://github.com/ainfera-ai/sdk/issues"
-
-[dependency-groups]
 dev = [
-    "pytest>=8.0",
-    "pytest-asyncio>=0.23",
-    "respx>=0.21",
-    "mypy>=1.10",
-    "ruff>=0.6",
-    "click>=8.1",
-    "pyyaml>=6.0",
-    "types-pyyaml>=6.0",
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "ruff>=0.4.0",
+]
+test = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
 ]
 
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
-[tool.hatch.build.targets.wheel]
-packages = ["python/ainfera"]
-
-[tool.hatch.build.targets.sdist]
-include = [
-    "python/ainfera",
-    "README.md",
-    "LICENSE",
-    "pyproject.toml",
-]
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["sdk*"]
 
 [tool.ruff]
-line-length = 100
 target-version = "py310"
+line-length = 100
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "B", "UP", "N", "W"]
-# N818: public exception names (ModelUnavailable, WalletInsufficient, ...) are
-# part of the SDK's user-facing contract — renaming them to add an "Error"
-# suffix would break customer `except` clauses.
-ignore = ["N818"]
-
-[tool.mypy]
-python_version = "3.10"
-strict = true
-files = ["python/ainfera"]
+select = ["E", "F", "W", "I", "N", "B", "A", "C4", "SIM", "UP"]
 
 [tool.pytest.ini_options]
-testpaths = ["python/tests"]
-asyncio_mode = "auto"
+testpaths = ["tests"]
+addopts = "-v --tb=short"
