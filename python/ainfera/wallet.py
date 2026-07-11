@@ -48,9 +48,7 @@ class Wallet(BaseModel):
 
     def _require_http(self) -> HttpClient:
         if self._http is None:
-            raise RuntimeError(
-                "Wallet is not bound to a client; retrieve it via agent.wallet"
-            )
+            raise RuntimeError("Wallet is not bound to a client; retrieve it via agent.wallet")
         return self._http
 
 
@@ -76,7 +74,5 @@ class AsyncWallet(BaseModel):
 
     def _require_http(self) -> AsyncHttpClient:
         if self._http is None:
-            raise RuntimeError(
-                "AsyncWallet is not bound to a client; retrieve it via agent.wallet"
-            )
+            raise RuntimeError("AsyncWallet is not bound to a client; retrieve it via agent.wallet")
         return self._http

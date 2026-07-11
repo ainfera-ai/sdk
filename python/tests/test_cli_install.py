@@ -109,9 +109,7 @@ def test_install_dry_run_prints_payload_without_network(
     assert '"handle": "varda"' in result.output
 
 
-def test_install_posts_and_writes_keys_file(
-    tmp_path: Path, fake_identity: tuple[str, str]
-) -> None:
+def test_install_posts_and_writes_keys_file(tmp_path: Path, fake_identity: tuple[str, str]) -> None:
     _write_manifest(tmp_path / "varda", handle="varda", framework="nemoclaw")
     _write_manifest(tmp_path / "namo", handle="namo", framework="langgraph")
 
@@ -214,18 +212,14 @@ def test_install_preserves_existing_keys_on_rerun(
     assert saved == {"varda": "ak_live_previously_minted"}
 
 
-def test_install_aborts_on_empty_dir(
-    tmp_path: Path, fake_identity: tuple[str, str]
-) -> None:
+def test_install_aborts_on_empty_dir(tmp_path: Path, fake_identity: tuple[str, str]) -> None:
     runner = CliRunner()
     result = runner.invoke(cli_mod.cli, ["install", "--dir", str(tmp_path)])
     assert result.exit_code != 0
     assert "No ainfera-agent.yaml" in result.output
 
 
-def test_install_surfaces_http_error(
-    tmp_path: Path, fake_identity: tuple[str, str]
-) -> None:
+def test_install_surfaces_http_error(tmp_path: Path, fake_identity: tuple[str, str]) -> None:
     _write_manifest(tmp_path / "varda", handle="varda", framework="nemoclaw")
     api_base = "https://api.example.test"
 

@@ -34,9 +34,7 @@ def _agent_body(*, agent_id: str = _AID, name: str = "n") -> dict[str, object]:
     }
 
 
-def _signup_body(
-    *, agent_id: str = _AID, agent_handle: str = "quickstart-1"
-) -> dict[str, object]:
+def _signup_body(*, agent_id: str = _AID, agent_handle: str = "quickstart-1") -> dict[str, object]:
     """The canonical /v1/agents/signup bundle response shape."""
     return {
         "agent_id": agent_id,
@@ -63,9 +61,7 @@ def test_agent_register(mock_api: respx.MockRouter) -> None:
 
 def test_agent_signup_returns_bundle(mock_api: respx.MockRouter) -> None:
     """AIN-79: client.agents.signup hits /v1/agents/signup and returns the bundle."""
-    mock_api.post("/v1/agents/signup").mock(
-        return_value=httpx.Response(201, json=_signup_body())
-    )
+    mock_api.post("/v1/agents/signup").mock(return_value=httpx.Response(201, json=_signup_body()))
     client = AinferaClient(api_key="")
     result = client.agents.signup(
         agent_handle="quickstart-1", owner_handle="github_user", owner_source="github_user"
@@ -104,9 +100,7 @@ def test_agent_signup_sends_canonical_payload(mock_api: respx.MockRouter) -> Non
 
 
 def test_agent_retrieve(mock_api: respx.MockRouter) -> None:
-    mock_api.get(f"/v1/agents/{_AID}").mock(
-        return_value=httpx.Response(200, json=_agent_body())
-    )
+    mock_api.get(f"/v1/agents/{_AID}").mock(return_value=httpx.Response(200, json=_agent_body()))
     client = AinferaClient(api_key="ak_test")
     agent = client.agents.retrieve(_AID)
     assert agent.agent_id == _AID
@@ -139,9 +133,7 @@ def test_agent_refresh_updates_fields(mock_api: respx.MockRouter) -> None:
 
 
 def test_agent_refresh_clears_wallet_cache(mock_api: respx.MockRouter) -> None:
-    mock_api.get(f"/v1/agents/{_AID}").mock(
-        return_value=httpx.Response(200, json=_agent_body())
-    )
+    mock_api.get(f"/v1/agents/{_AID}").mock(return_value=httpx.Response(200, json=_agent_body()))
     wallet_route = mock_api.get(f"/v1/wallets/{_AID}").mock(
         return_value=httpx.Response(200, json={"agent_id": _AID, "balance_usd": "0"})
     )
@@ -172,9 +164,7 @@ def test_wallet_topup(mock_api: respx.MockRouter) -> None:
             },
         )
     )
-    mock_api.get(f"/v1/agents/{_AID}").mock(
-        return_value=httpx.Response(200, json=_agent_body())
-    )
+    mock_api.get(f"/v1/agents/{_AID}").mock(return_value=httpx.Response(200, json=_agent_body()))
     client = AinferaClient(api_key="ak_test")
     agent = client.agents.retrieve(_AID)
     agent.wallet.topup(amount_usd=10)
@@ -197,9 +187,7 @@ def test_wallet_topup_body_carries_agent_id(mock_api: respx.MockRouter) -> None:
             },
         )
     )
-    mock_api.get(f"/v1/agents/{_AID}").mock(
-        return_value=httpx.Response(200, json=_agent_body())
-    )
+    mock_api.get(f"/v1/agents/{_AID}").mock(return_value=httpx.Response(200, json=_agent_body()))
     client = AinferaClient(api_key="ak_test")
     agent = client.agents.retrieve(_AID)
     agent.wallet.topup(amount_usd=5)
@@ -209,9 +197,7 @@ def test_wallet_topup_body_carries_agent_id(mock_api: respx.MockRouter) -> None:
 
 
 def test_agent_ledger_entries(mock_api: respx.MockRouter) -> None:
-    mock_api.get(f"/v1/agents/{_AID}").mock(
-        return_value=httpx.Response(200, json=_agent_body())
-    )
+    mock_api.get(f"/v1/agents/{_AID}").mock(return_value=httpx.Response(200, json=_agent_body()))
     ledger_route = mock_api.get(f"/v1/ledger/{_AID}").mock(
         return_value=httpx.Response(
             200,
@@ -242,9 +228,7 @@ def test_agent_ledger_entries(mock_api: respx.MockRouter) -> None:
 
 
 def test_inference_returns_response(mock_api: respx.MockRouter) -> None:
-    mock_api.get(f"/v1/agents/{_AID}").mock(
-        return_value=httpx.Response(200, json=_agent_body())
-    )
+    mock_api.get(f"/v1/agents/{_AID}").mock(return_value=httpx.Response(200, json=_agent_body()))
     mock_api.post("/v1/inference").mock(
         return_value=httpx.Response(
             200,
@@ -278,9 +262,7 @@ def test_inference_returns_response(mock_api: respx.MockRouter) -> None:
 
 
 def test_inference_body_carries_agent_id(mock_api: respx.MockRouter) -> None:
-    mock_api.get(f"/v1/agents/{_AID}").mock(
-        return_value=httpx.Response(200, json=_agent_body())
-    )
+    mock_api.get(f"/v1/agents/{_AID}").mock(return_value=httpx.Response(200, json=_agent_body()))
     route = mock_api.post("/v1/inference").mock(
         return_value=httpx.Response(
             200,
@@ -306,9 +288,7 @@ def test_inference_body_carries_agent_id(mock_api: respx.MockRouter) -> None:
 
 
 def test_inference_content_blocks_preserved(mock_api: respx.MockRouter) -> None:
-    mock_api.get(f"/v1/agents/{_AID}").mock(
-        return_value=httpx.Response(200, json=_agent_body())
-    )
+    mock_api.get(f"/v1/agents/{_AID}").mock(return_value=httpx.Response(200, json=_agent_body()))
     mock_api.post("/v1/inference").mock(
         return_value=httpx.Response(
             200,
@@ -332,9 +312,7 @@ def test_inference_content_blocks_preserved(mock_api: respx.MockRouter) -> None:
 
 
 def test_inference_accepts_per_call_timeout(mock_api: respx.MockRouter) -> None:
-    mock_api.get(f"/v1/agents/{_AID}").mock(
-        return_value=httpx.Response(200, json=_agent_body())
-    )
+    mock_api.get(f"/v1/agents/{_AID}").mock(return_value=httpx.Response(200, json=_agent_body()))
     route = mock_api.post("/v1/inference").mock(
         return_value=httpx.Response(
             200,
@@ -377,9 +355,7 @@ def test_audit_chain_events_and_verify(mock_api: respx.MockRouter) -> None:
     e1 = make_event(1, {"v": 1}, str(e0["event_hash"]))
     e2 = make_event(2, {"v": 2}, str(e1["event_hash"]))
 
-    mock_api.get(f"/v1/agents/{_AID}").mock(
-        return_value=httpx.Response(200, json=_agent_body())
-    )
+    mock_api.get(f"/v1/agents/{_AID}").mock(return_value=httpx.Response(200, json=_agent_body()))
 
     # Mock respects `since_seq` like the real API does — returns events with
     # seq > since_seq, empty when no more remain. Without this filtering,
@@ -421,9 +397,7 @@ def test_audit_chain_paginates_via_since_seq(mock_api: respx.MockRouter) -> None
     e1 = make_event(1, {"v": 1}, str(e0["event_hash"]))
     e2 = make_event(2, {"v": 2}, str(e1["event_hash"]))
 
-    mock_api.get(f"/v1/agents/{_AID}").mock(
-        return_value=httpx.Response(200, json=_agent_body())
-    )
+    mock_api.get(f"/v1/agents/{_AID}").mock(return_value=httpx.Response(200, json=_agent_body()))
 
     # Two-page walk: caller asks for limit=2 per page, gets e0+e1 on page 1,
     # then since_seq=1 returns e2 on page 2. The third call (since_seq=2)
@@ -466,9 +440,7 @@ def test_audit_chain_limit_stops_before_next_page(mock_api: respx.MockRouter) ->
             "created_at": datetime(2026, 5, 14, tzinfo=timezone.utc).isoformat(),
         }
 
-    mock_api.get(f"/v1/agents/{_AID}").mock(
-        return_value=httpx.Response(200, json=_agent_body())
-    )
+    mock_api.get(f"/v1/agents/{_AID}").mock(return_value=httpx.Response(200, json=_agent_body()))
     page_one = mock_api.get(f"/v1/audit/{_AID}").mock(
         return_value=httpx.Response(
             200,
@@ -485,9 +457,7 @@ def test_audit_chain_limit_stops_before_next_page(mock_api: respx.MockRouter) ->
 
 
 def test_audit_verify_remote(mock_api: respx.MockRouter) -> None:
-    mock_api.get(f"/v1/agents/{_AID}").mock(
-        return_value=httpx.Response(200, json=_agent_body())
-    )
+    mock_api.get(f"/v1/agents/{_AID}").mock(return_value=httpx.Response(200, json=_agent_body()))
     mock_api.get(f"/v1/audit/{_AID}/verify").mock(
         return_value=httpx.Response(
             200,

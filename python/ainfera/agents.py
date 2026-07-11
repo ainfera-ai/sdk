@@ -156,9 +156,7 @@ class Agent(BaseModel):
 
     def _require_client(self) -> AinferaClient:
         if self._client is None:
-            raise RuntimeError(
-                "Agent is not bound to a client; retrieve it via client.agents"
-            )
+            raise RuntimeError("Agent is not bound to a client; retrieve it via client.agents")
         return self._client
 
 
@@ -291,9 +289,7 @@ class SignupResult(BaseModel):
     owner_handle: str | None = None
     canonical_uri: str | None = None
     did_web: str | None = None
-    api_key: str = Field(
-        description="One-time API key — shown once; persist before discarding."
-    )
+    api_key: str = Field(description="One-time API key — shown once; persist before discarding.")
     agent_card_jws: str | None = None
 
     @property

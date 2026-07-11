@@ -137,9 +137,7 @@ class HttpClient:
         timeout: float | None = None,
     ) -> dict[str, Any]:
         timeout_arg = timeout if timeout is not None else httpx.USE_CLIENT_DEFAULT
-        response = self._client.request(
-            method, path, json=json, params=params, timeout=timeout_arg
-        )
+        response = self._client.request(method, path, json=json, params=params, timeout=timeout_arg)
         if response.status_code >= 400:
             raise _map_error(response)
         return _parse_body(response)

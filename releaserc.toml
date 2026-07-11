@@ -1,0 +1,9 @@
+[semantic_release]
+version_variable = ["pyproject.toml:version"]
+branch = "main"
+upload_to_pypi = false
+
+[semantic_release.commit_parser]
+allowed_tags = ["feat", "fix", "docs", "chore"]
+minor_tags = ["feat"]
+patch_tags = ["fix", "docs"]

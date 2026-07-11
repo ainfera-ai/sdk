@@ -43,9 +43,7 @@ def test_403_maps_to_spend_policy_exceeded(mock_api: respx.MockRouter) -> None:
 
 def test_403_without_spend_code_maps_to_api_error(mock_api: respx.MockRouter) -> None:
     mock_api.post("/v1/inference").mock(
-        return_value=httpx.Response(
-            403, json={"detail": "agent belongs to another tenant"}
-        )
+        return_value=httpx.Response(403, json={"detail": "agent belongs to another tenant"})
     )
     client = AinferaClient(api_key="ak_test")
     agent = _bare_agent(client, "ag_x")
@@ -77,9 +75,7 @@ def test_422_model_unavailable_carries_model_and_provider(
 
 
 def test_500_maps_to_generic_api_error(mock_api: respx.MockRouter) -> None:
-    mock_api.post("/v1/inference").mock(
-        return_value=httpx.Response(500, json={"message": "boom"})
-    )
+    mock_api.post("/v1/inference").mock(return_value=httpx.Response(500, json={"message": "boom"}))
     client = AinferaClient(api_key="ak_test")
     agent = _bare_agent(client, "ag_x")
     with pytest.raises(APIError) as exc:
