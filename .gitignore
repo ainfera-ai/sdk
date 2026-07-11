@@ -37,3 +37,5 @@ coverage.xml
 htmlcov/
 .tox/
 .claude/
+.python-version
+uv.lock
