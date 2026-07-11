@@ -7,6 +7,24 @@
 
 Agent-native inference routing by Ainfera. Signed AgentCards, provider-neutral routing, hash-chained AuditChains — out of the box.
 
+
+## Compatibility
+
+| Feature | ainfera SDK | openai SDK | anthropic SDK |
+|---------|-------------|------------|---------------|
+| Routed inference | ✅ | ❌ | ❌ |
+| Streaming | ✅ | ✅ | ✅ |
+| Tool use | ✅ | ✅ | ✅ |
+| Receipt verification | ✅ | ❌ | ❌ |
+| Audit chain | ✅ | ❌ | ❌ |
+| Agent cards | ✅ | ❌ | ❌ |
+| Provider-neutral | ✅ | ❌ | ❌ |
+| Async support | ✅ | ✅ | ✅ |
+
+## API Versioning
+
+The SDK targets Ainfera API v1. Breaking changes follow semantic versioning.
+
 ## Install
 
 ```bash
@@ -64,12 +82,12 @@ ok = agent.audit_chain.verify()  # walks the chain, verifies hashes offline
 
 ## What is Ainfera?
 
-**The Inference of AI Agents.** Ainfera Inference (the flagship product — the routing brain) picks the best model under your agent's budget and latency caps. Point at `ainfera-inference` and trust the researched decision. One Agent Card across 57 models. Every routing decision and inference call cryptographically audited. See [ainfera.ai](https://ainfera.ai) and the [`ainfera-routing`](https://github.com/ainfera-ai/routing) decision library.
+**The Inference of AI Agents.** Ainfera Inference (the flagship product — the routing brain) picks the best model under your agent's budget and latency caps. Point at `ainfera-inference` and trust the researched decision. One Agent Card across all routed models. Every routing decision and inference call cryptographically audited. See [ainfera.ai](https://ainfera.ai) and the [`ainfera-routing`](https://github.com/ainfera-ai/routing) decision library.
 
 ## Features
 
 - **Signed AgentCards** per Agent (JWS, RFC 7515)
-- **Provider-neutral routing** across 57 models from many providers (Anthropic, OpenAI, Together, and more)
+- **Provider-neutral routing** across all routed models from many providers (Anthropic, OpenAI, Together, and more)
 - **Atomic per-call settlement** out of an Agent-scoped Wallet
 - **Tamper-evident hash-chained AuditChain** for every Agent
 - **Local verification** — auditors can verify a chain offline, no Ainfera trust required
@@ -77,11 +95,11 @@ ok = agent.audit_chain.verify()  # walks the chain, verifies hashes offline
 
 ## Concepts
 
-- [Agent](https://ainfera.ai/concepts/agent)
-- [AgentCard](https://ainfera.ai/concepts/agent-card)
-- [Inference](https://ainfera.ai/concepts/inference)
-- [Wallet](https://ainfera.ai/concepts/wallet)
-- [AuditChain](https://ainfera.ai/concepts/audit-chain)
+- [Agent](https://ainfera.ai/docs#agent)
+- [AgentCard](https://ainfera.ai/docs#agent-card)
+- [Inference](https://ainfera.ai/docs#inference)
+- [Wallet](https://ainfera.ai/docs#wallet)
+- [AuditChain](https://ainfera.ai/docs#audit-chain)
 
 ## Compose, don't invent
 

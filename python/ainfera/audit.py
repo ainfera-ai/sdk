@@ -176,16 +176,12 @@ class AsyncAuditChain(BaseModel):
 
     async def verify_remote(self) -> AuditVerifyResult:
         """Ask the API to verify the chain server-side."""
-        body = await self._require_http().request(
-            "GET", endpoints.audit_verify(self.agent_id)
-        )
+        body = await self._require_http().request("GET", endpoints.audit_verify(self.agent_id))
         return AuditVerifyResult.model_validate(body)
 
     async def annex_iv_bundle(self) -> dict[str, Any]:
         """Fetch the Annex IV-style audit export bundle."""
-        return await self._require_http().request(
-            "GET", endpoints.audit_annex_iv(self.agent_id)
-        )
+        return await self._require_http().request("GET", endpoints.audit_annex_iv(self.agent_id))
 
     def _require_http(self) -> AsyncHttpClient:
         if self._http is None:

@@ -94,8 +94,7 @@ def _load_manifest(path: Path) -> dict[str, Any]:
         import yaml
     except ImportError as exc:
         raise click.ClickException(
-            "PyYAML is required for `ainfera install`. "
-            "Install with `pip install 'ainfera[cli]'`."
+            "PyYAML is required for `ainfera install`. Install with `pip install 'ainfera[cli]'`."
         ) from exc
 
     raw = yaml.safe_load(path.read_text(encoding="utf-8"))
@@ -281,9 +280,7 @@ def install(
     if minted:
         click.echo(f"\nKeys saved to {rel_keys} ({minted} key(s) written).")
     else:
-        click.echo(
-            f"\nNo new api_keys returned (tenant key already on file in {rel_keys})."
-        )
+        click.echo(f"\nNo new api_keys returned (tenant key already on file in {rel_keys}).")
 
     dashboard_url = result.get("dashboard_url") or f"https://app.ainfera.ai/{handle}"
     click.echo(f"\nDashboard: {dashboard_url}")

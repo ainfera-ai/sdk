@@ -95,9 +95,7 @@ def test_verify_chain_detects_broken_hash() -> None:
 
 def test_verify_chain_detects_previous_hash_mismatch() -> None:
     e0 = _build_event(seq=0, event_type="x", payload={"v": 0}, previous_hash=None)
-    e1 = _build_event(
-        seq=1, event_type="x", payload={"v": 1}, previous_hash="deadbeef" * 8
-    )
+    e1 = _build_event(seq=1, event_type="x", payload={"v": 1}, previous_hash="deadbeef" * 8)
     with pytest.raises(AuditChainBroken) as exc:
         verify_chain([e0, e1])
     assert exc.value.broken_at_seq == 1
