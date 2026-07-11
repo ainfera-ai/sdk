@@ -1,41 +1,56 @@
-# sdk
-
-Agent-native inference routing by Ainfera. Python SDK — signed AgentCards, routed inference, audit c
+# sdk — Agent-native inference routing by Ainfera. Python SDK
 
 [build-system]
 requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "sdk"
-version = "0.1.0"
-description = "Agent-native inference routing by Ainfera. Python SDK — signed AgentCards, routed inference, audit c"
+name = "ainfera"
+version = "1.1.0"
+description = "Agent-native inference routing by Ainfera. Python SDK — signed AgentCards, routed inference, audit chains."
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "Apache-2.0"}
 authors = [{name = "Ainfera Inc"}]
 classifiers = [
-    "Development Status :: 2 - Pre-Alpha",
+    "Development Status :: 3 - Alpha",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
 ]
+dependencies = [
+    "httpx>=0.27",
+    "pydantic>=2.0",
+    "joserfc>=1.0",
+]
+
+[project.scripts]
+ainfera = "ainfera.cli:main"
 
 [project.optional-dependencies]
 dev = [
     "pytest>=7.0",
     "pytest-cov>=4.0",
+    "pytest-asyncio>=0.23",
+    "respx>=0.20",
     "ruff>=0.4.0",
+    "pyright>=1.1.350",
 ]
 test = [
     "pytest>=7.0",
     "pytest-cov>=4.0",
+    "pytest-asyncio>=0.23",
+    "respx>=0.20",
+]
+cli = [
+    "click>=8.0",
+    "pyyaml>=6.0",
 ]
 
 [tool.setuptools.packages.find]
-where = ["src"]
-include = ["sdk*"]
+where = ["python"]
+include = ["ainfera*"]
 
 [tool.ruff]
 target-version = "py310"
@@ -44,6 +59,29 @@ line-length = 100
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "N", "B", "A", "C4", "SIM", "UP"]
 
+[tool.ruff.lint.per-file-ignores]
+# Exception names follow API semantics (AgentCardInvalid, ModelUnavailable, etc.)
+# Renaming would break the public API contract.
+"python/ainfera/exceptions.py" = ["N818"]
+
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["python/tests"]
 addopts = "-v --tb=short"
+
+[tool.pyright]
+# Type-check only the library source, not tests/examples — test deps (pytest,
+# respx) and example deps (openai) are not always installed and their type
+# stubs create noise. The library is the contract; tests are verified by
+# pytest at runtime.
+# cli.py is excluded because click is an optional [cli] extra — pyright can't
+# resolve it when the extra isn't installed.
+include = ["python/ainfera"]
+exclude = ["**/__pycache__", ".venv", "tests", "examples", "python/ainfera/cli.py"]
+reportMissingImports = "error"
+reportMissingTypeStubs = "none"
+typeCheckingMode = "basic"
+
+[dependency-groups]
+dev = [
+    "pyright>=1.1.411",
+]

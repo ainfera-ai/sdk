@@ -56,9 +56,7 @@ def verify_compact(token: str, public_key: bytes | str) -> dict[str, Any]:
         AgentCardInvalid: Signature did not verify, the alg was rejected,
             or the payload was not valid JSON.
     """
-    key_material = (
-        public_key.decode("utf-8") if isinstance(public_key, bytes) else public_key
-    )
+    key_material = public_key.decode("utf-8") if isinstance(public_key, bytes) else public_key
 
     try:
         sig_unverified = jws.extract_compact(token.encode("ascii"))

@@ -6,14 +6,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **README rewritten**: removed stale "57 models" literal count claims; examples now use `model="ainfera-inference"` (the flagship route) instead of pinned `claude-haiku-4-5`; concept page links updated to point to live `/docs` sections.
+- **`examples/quickstart.py`**: inference model changed from `claude-haiku-4-5` to `ainfera-inference`.
+- **`python/examples/04_inference.py`**: model changed to `ainfera-inference`; fixed broken `.receipt.audit_url` reference (replaced with `.receipt_id`).
+- **`examples/README.md`**: updated model reference and version pin (`>=1.1.0` instead of `==1.0.1`).
+
+### Added
+
+- **Compatibility table** in README: explicit feature matrix across `ainfera` SDK, `openai` SDK, and `anthropic` SDK.
+- **Streaming example** (`examples/streaming.py`): SSE via the OpenAI-compatible endpoint.
+- **Tools example** (`examples/tools.py`): function calling with `tools=` and `tool_choice=`.
+- **Retries example** (`examples/retries.py`): exponential backoff for transient 5xx errors with semantic exception handling.
+- **Async example** (`examples/async_usage.py`): `AsyncAinferaClient` with wallet and audit chain verification.
+- **Receipt verification example** (`examples/receipt_verification.py`): inline receipt + local AuditChain verification.
+- **Error handling example** (`examples/error_handling.py`): full semantic exception hierarchy mapping.
+- **API versioning** section in README documenting the SDK↔API compatibility contract.
+- **Local verification** clarification in README: tamper-evidence vs tamper-prevention; proves log integrity relative to the published key.
+- **Semantic-release config** (`releaserc.toml`): automated version bumping from Conventional Commits.
+- **Routing hints** example in README: `routing_hint`, `pool`, budget/latency/quality caps.
+
 ### Fixed
 
-- **AsyncAgent.wallet** (AIN-196): use `wallet = await agent.wallet` or `await agent.get_wallet()` — no longer a coroutine method that breaks property-style access.
-- **verify_chain([])** now raises `AuditChainBroken` instead of returning true on empty chains.
-- **AuditEvent.previous_hash** accepts API `prev_hash` alias.
-- **AinferaClient.from_signup()** / **AsyncAinferaClient.from_signup()** implemented.
-- **403 mapping** (FLAW-02): only `spend_policy_exceeded` bodies raise `SpendPolicyExceeded`; other 403s are `APIError`.
-- **Agent.ledger** / **AsyncAgent.ledger** (BUG-07): handle for `GET /v1/ledger/{agent_id}`.
+- **04_inference.py**: broken `.receipt.audit_url` reference — `Receipt` model has no `audit_url` field accessible via `.receipt` on `InferenceResponse`; replaced with `.receipt_id` which is the actual response field.
+- **examples/README.md**: stale `ainfera==1.0.1` pin updated to `>=1.1.0`.
 
 ## [1.1.0] — 2026-05-19
 

@@ -140,9 +140,7 @@ class AinferaClient:
         body = self._http.request("GET", endpoints.agent(agent_id))
         pem = body.get("public_key_ed25519")
         if not isinstance(pem, str) or not pem:
-            raise AinferaError(
-                f"Agent {agent_id} response is missing public_key_ed25519"
-            )
+            raise AinferaError(f"Agent {agent_id} response is missing public_key_ed25519")
         return pem.encode("utf-8")
 
 
@@ -210,7 +208,5 @@ class AsyncAinferaClient:
         body = await self._http.request("GET", endpoints.agent(agent_id))
         pem = body.get("public_key_ed25519")
         if not isinstance(pem, str) or not pem:
-            raise AinferaError(
-                f"Agent {agent_id} response is missing public_key_ed25519"
-            )
+            raise AinferaError(f"Agent {agent_id} response is missing public_key_ed25519")
         return pem.encode("utf-8")

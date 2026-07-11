@@ -1,0 +1,34 @@
+# Python Semantic Release configuration
+# https://python-semantic-release.readthedocs.io/
+#
+# Migrated from manual tag-based releases to automated semantic versioning.
+# Commits following Conventional Commits (feat:, fix:, docs:, etc.) trigger
+# automatic version bumps, changelog updates, and PyPI releases.
+#
+# Requires: pip install python-semantic-release
+# Run: semantic-release publish (or via CI on push to main)
+
+[tool.semantic_release]
+version_toml = ["python/ainfera/_version.py:__version__"]
+version_pattern = [
+    "pyproject.toml:version = \"{version}\"",
+]
+build_command = "uv build"
+changelog_file = "CHANGELOG.md"
+changelog_capable = true
+tag_format = "v{version}"
+commit_parser = "angular"
+
+[tool.semantic_release.branches.main]
+match = "main"
+prerelease = false
+
+[tool.semantic_release.branches.alpha]
+match = "alpha"
+prerelease = true
+prerelease_token = "alpha"
+
+[tool.semantic_release.publish]
+dist_glob_patterns = ["dist/*"]
+upload_to_pypi = true
+upload_to_release = true

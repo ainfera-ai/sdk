@@ -33,9 +33,7 @@ def _agent_body() -> dict[str, object]:
 @pytest.mark.asyncio
 async def test_async_agent_register(mock_api: respx.MockRouter) -> None:
     mock_api.post("/v1/agents/register").mock(
-        return_value=httpx.Response(
-            201, json={**_agent_body(), "name": "async"}
-        )
+        return_value=httpx.Response(201, json={**_agent_body(), "name": "async"})
     )
     client = AsyncAinferaClient(api_key="ak_test")
     try:
@@ -67,9 +65,7 @@ async def test_async_agent_refresh(mock_api: respx.MockRouter) -> None:
 
 @pytest.mark.asyncio
 async def test_async_inference(mock_api: respx.MockRouter) -> None:
-    mock_api.get(f"/v1/agents/{_AID}").mock(
-        return_value=httpx.Response(200, json=_agent_body())
-    )
+    mock_api.get(f"/v1/agents/{_AID}").mock(return_value=httpx.Response(200, json=_agent_body()))
     route = mock_api.post("/v1/inference").mock(
         return_value=httpx.Response(
             200,
@@ -116,9 +112,7 @@ async def test_async_audit_chain_events(mock_api: respx.MockRouter) -> None:
         }
 
     e0 = make(0, {"v": 0}, None)
-    mock_api.get(f"/v1/agents/{_AID}").mock(
-        return_value=httpx.Response(200, json=_agent_body())
-    )
+    mock_api.get(f"/v1/agents/{_AID}").mock(return_value=httpx.Response(200, json=_agent_body()))
 
     def handler(request: httpx.Request) -> httpx.Response:
         since_raw = request.url.params.get("since_seq")
@@ -160,9 +154,7 @@ async def test_async_audit_chain_paginates_via_since_seq(
     e0 = make(0, {"v": 0}, None)
     e1 = make(1, {"v": 1}, str(e0["event_hash"]))
 
-    mock_api.get(f"/v1/agents/{_AID}").mock(
-        return_value=httpx.Response(200, json=_agent_body())
-    )
+    mock_api.get(f"/v1/agents/{_AID}").mock(return_value=httpx.Response(200, json=_agent_body()))
 
     def handler(request: httpx.Request) -> httpx.Response:
         since = request.url.params.get("since_seq")
@@ -186,13 +178,9 @@ async def test_async_audit_chain_paginates_via_since_seq(
 @pytest.mark.asyncio
 async def test_async_agent_wallet_awaitable(mock_api: respx.MockRouter) -> None:
     """AIN-196: AsyncAgent.wallet is awaitable, not a mistaken sync property."""
-    mock_api.get(f"/v1/agents/{_AID}").mock(
-        return_value=httpx.Response(200, json=_agent_body())
-    )
+    mock_api.get(f"/v1/agents/{_AID}").mock(return_value=httpx.Response(200, json=_agent_body()))
     wallet_route = mock_api.get(f"/v1/wallets/{_AID}").mock(
-        return_value=httpx.Response(
-            200, json={"agent_id": _AID, "balance_usd": "3.50"}
-        )
+        return_value=httpx.Response(200, json={"agent_id": _AID, "balance_usd": "3.50"})
     )
     client = AsyncAinferaClient(api_key="ak_test")
     try:

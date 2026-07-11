@@ -5,8 +5,8 @@ from ainfera import AinferaClient
 client = AinferaClient(api_key="ak_...")
 agent = client.agents.retrieve("ag_...")
 response = agent.inference(
-    model="claude-opus-4-7",
+    model="ainfera-inference",  # the flagship route — Ainfera picks the best model
     messages=[{"role": "user", "content": "Hello"}],
 )
-print(response.text)
-print(response.receipt.audit_url)
+print(response.content)
+print(response.receipt_id)  # links to this call's AuditChain entry

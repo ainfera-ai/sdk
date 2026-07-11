@@ -80,7 +80,7 @@ def main() -> int:
     print("\n→ Running first signed Inference…")
     try:
         inference = agent.inference(
-            model="claude-haiku-4-5",
+            model="ainfera-inference",
             messages=[
                 {
                     "role": "user",
@@ -95,9 +95,7 @@ def main() -> int:
 
     print(f"  ✓ content       = {inference.content!r}")
     print(f"  ✓ model_used    = {inference.model_used}")
-    print(
-        f"  ✓ tokens        = {inference.input_tokens} in / {inference.output_tokens} out"
-    )
+    print(f"  ✓ tokens        = {inference.input_tokens} in / {inference.output_tokens} out")
     print(f"  ✓ cost_usd      = ${inference.cost_usd}")
     print(f"  ✓ inference_id  = {inference.inference_id}")
     print(f"  ✓ receipt_id    = {inference.receipt_id}")
