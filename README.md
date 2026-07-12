@@ -83,7 +83,7 @@ The Ainfera API is wire-compatible with both OpenAI and Anthropic SDKs. This
 Python SDK (`ainfera`) is the native wrapper with first-class typed access to
 Ainfera-specific features (AgentCards, Wallets, AuditChains, Ledger).
 
-| Feature | `ainfera` SDK | `openai` SDK (drop-in) | `anthropic` SDK (drop-in) |
+| Feature | `ainfera` SDK | `openai` SDK (chat-completions) | `anthropic` SDK (chat-completions) |
 |---|---|---|---|
 | Routed inference (`ainfera-inference`) | ✅ | ✅ `model="ainfera-inference"` | ✅ `model="ainfera-inference"` |
 | Pinned model (e.g. `claude-opus-4-7`) | ✅ | ✅ | ✅ |

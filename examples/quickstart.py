@@ -108,7 +108,7 @@ def main() -> int:
     print(f"  Verify call   : {API_BASE}/v1/audit/{result.agent_id}/verify")
     print(f"  Annex IV      : {API_BASE}/v1/audit/{result.agent_id}/annex-iv")
 
-    print("\n✅ Quickstart verified — your first signed Inference is on chain.")
+    print("\n✅ Quickstart verified — your first signed Inference is in the audit log.")
     return 0
 
 
