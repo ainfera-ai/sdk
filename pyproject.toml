@@ -3,7 +3,7 @@
 # Agent-native inference routing by Ainfera. Python SDK — signed AgentCards, routed inference, audit chains.
 
 [build-system]
-requires = ["setuptools>=68.0", "wheel"]
+requires = ["setuptools>=83.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
